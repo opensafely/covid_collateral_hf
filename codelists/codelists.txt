@@ -1,0 +1,77 @@
+#### Medications ####
+opensafely/beta-blocker-medications/5a9825d4
+user/emilyherrett/arni/54c2d0da
+user/emilyherrett/mras/3bb35da5
+user/john-tazare/sglt2-inhibitors-dmd/2fd4c021
+opensafely/ace-inhibitor-medications/0a044c49
+opensafely/angiotensin-ii-receptor-blockers-arbs/3ed5f2a9
+pincer/diur/213b1078
+
+#### Ethnicity - SNOMED
+opensafely/ethnicity-snomed-0removed/2e641f61/
+
+#### Primary care ####
+nhsd-primary-care-domain-refsets/bp_cod/20200812
+nhsd-primary-care-domain-refsets/efi_cod/40a64f80
+opensafely/atrial-fibrillation-or-flutter/777fb1d7
+opensafely/atrial-fibrillation-clinical-finding/4e3fbede
+nhsd-primary-care-domain-refsets/preflang_cod/221dfefe
+opensafely/chronic-liver-disease-snomed/31b6d824
+opensafely/nhs-england-care-homes-residential-status-ctv3/1e037bde
+opensafely/amputation-of-lower-limb/2020-09-25
+opensafely/diabetes-ketoacidosis-ctv3-dka-unspecific/605c4b09
+opensafely/hypertension-snomed/2020-04-28
+user/bangzheng/creatinine-value/7d319079
+opensafely/smoking-clear/10307fc4
+opensafely/dialysis/3ce108ac
+opensafely/kidney-transplant/21865860
+opensafely/chronic-liver-disease/02b2bff6
+opensafely/falls/35304ba9
+nhsd-primary-care-domain-refsets/falls_cod/659c2701
+user/emilyherrett/beta-blocker-contraind/0994773b
+user/emilyherrett/mra-contraind/70850405
+#ARB contraindications - persisting, expiring, choice
+nhsd-primary-care-domain-refsets/xaii_cod/41b84af7
+nhsd-primary-care-domain-refsets/txaii_cod/52af7e4a
+nhsd-primary-care-domain-refsets/aiidec_cod/7a74dc1f
+#ACEI contraindications - persisting, expiring, choice
+nhsd-primary-care-domain-refsets/acedec_cod/750f5c33
+nhsd-primary-care-domain-refsets/xace_cod/5ac7be2c
+nhsd-primary-care-domain-refsets/txace_cod/6bbef17f
+user/emilyherrett/hypokalaemia/28096a5c
+user/emilyherrett/hyponatraemia/0ef9f727
+user/emilyherrett/sleep-apnoea/75ea83f1
+user/emilyherrett/heart-failure-ctv3/66df5d05
+user/emilyherrett/hfref/4b1d29da
+user/emilyherrett/hfpef/05545027
+nhsd-primary-care-domain-refsets/ckd1and2_cod/46c88e97
+nhsd-primary-care-domain-refsets/ckd_cod/5fd801cc
+nhsd-primary-care-domain-refsets/copd_cod/0b593d79
+opensafely/diabetes/2020-04-15
+opensafely/type-1-diabetes/2020-06-29
+opensafely/type-2-diabetes/2020-06-29
+opensafely/diabetes-unknown-type/2020-06-29
+#neuropathy
+
+#### Secondary care #####
+opensafely/diabetic-ketoacidosis-secondary-care/6e975569
+user/emilyherrett/heart-failure/6dd2440f
+bristol/fractures/565037f8
+# kidneys 
+user/viyaasan/acute-kidney-injury/27ec1897
+user/viyaasan/dialysis/4c8d3f33
+user/viyaasan/kidney-replacement-therapy/337dcbfe
+# CVD outcomes - stroke, MI, heart failure, all cardiovascular disease 
+opensafely/cardiovascular-secondary-care/20b63bd4
+
+#### OPCS4 #####
+opensafely/amputation-opcs-4-procedure-codes/1ccb510c
+user/viyaasan/kidney-transplant-opcs-4/18d788ae
+user/viyaasan/dialysis-opcs-4/6b023254
+user/viyaasan/kidney-replacement-therapy-opcs-4/38e34bea
+user/viyaasan/haemofiltration/51f2bf1f
+
+#### Emergency admissions ##### 
+#SNOMED coded for MACE and heart failure 
+user/alwynkotze/mace-snomed/4ce27b7f
+pincer/hf/6c696a17

@@ -1,0 +1,72 @@
+code,term
+1053591000000102,Nebivolol allergy
+1053601000000108,Nebivolol adverse reaction
+152165005,Beta blocker contraindicated
+152176009,Beta blocker therapy refused
+158043002,Adverse reaction to beta-blockers
+183939005,Beta blocker contraindicated
+183950008,Beta blocker therapy refused
+218437006,Adverse reaction to stanozolol
+218850002,Adverse reaction to practolol
+218852005,Adverse reaction to propranolol
+218891000,Adverse reaction to acebutolol
+218892007,Adverse reaction to atenolol
+218893002,Adverse reaction to labetalol
+218894008,Adverse reaction to metoprolol
+218895009,Adverse reaction to nadolol
+218896005,Adverse reaction to oxprenolol
+218897001,Adverse reaction to sotalol
+218898006,Adverse reaction to timolol
+218899003,Adverse reaction to beta-blockers NOS
+292423002,Atenolol adverse reaction
+293971000,Non-cardioselective beta-blocker allergy
+407577009,History of beta blocker allergy
+407591003,[V]Personal history of betablocker allergy
+508651000000109,Bisoprolol contraindicated
+508661000000107,Bisoprolol contraindicated 
+508671000000100,Bisoprolol contraindicated 
+508681000000103,Carvedilol contraindicated
+508691000000101,Carvedilol contraindicated 
+508701000000101,Carvedilol contraindicated 
+508711000000104,Nebivolol contraindicated
+508721000000105,Nebivolol contraindicated 
+508731000000107,Nebivolol contraindicated 
+508831000000101,Bisoprolol not tolerated
+508841000000105,Bisoprolol not tolerated 
+508851000000108,Bisoprolol not tolerated 
+508861000000106,Carvedilol not tolerated
+508871000000104,Carvedilol not tolerated 
+508881000000102,Carvedilol not tolerated 
+508891000000100,Nebivolol not tolerated
+508901000000104,Nebivolol not tolerated 
+508911000000102,Nebivolol not tolerated 
+508931000000105,Bisoprolol therapy refused 
+508941000000101,Bisoprolol therapy refused 
+508961000000100,Carvedilol therapy refused 
+508971000000107,Carvedilol therapy refused 
+508981000000109,Nebivolol therapy refused
+508991000000106,Nebivolol therapy refused 
+509001000000106,Nebivolol therapy refused 
+509121000000103,[X]Adverse reaction to bisoprolol
+509131000000101,[X]Adverse reaction to carvedilol
+509141000000105,[X]Adverse reaction to nebivolol
+509181000000102,[X]Personal history of allergy to bisoprolol
+509191000000100,[X]Personal history of allergy to carvedilol
+509201000000103,[X]Personal history of allergy to nebivolol
+510211000000107,[X]Adverse reaction to bisoprolol
+510221000000101,[X]Adverse reaction to carvedilol
+510231000000104,[X]Adverse reaction to nebivolol
+510241000000108,[X]Personal history of allergy to bisoprolol
+510251000000106,[X]Personal history of allergy to carvedilol
+510261000000109,[X]Personal history of allergy to nebivolol
+510591000000101,[X]Adverse reaction to bisoprolol
+510601000000107,[X]Adverse reaction to carvedilol
+510611000000109,[X]Adverse reaction to nebivolol
+510621000000103,[X]Personal history of allergy to bisoprolol
+510631000000101,[X]Personal history of allergy to carvedilol
+510641000000105,[X]Personal history of allergy to nebivolol
+674781000000103,Adverse reaction to beta-blockers NOS
+88201000000105,Beta blocker not tolerated
+89171000000103,[V]Personal history of betablocker allergy
+95011000000109,H/O: betablocker allergy
+99881000000105,H/O: betablocker allergy

@@ -1,0 +1,137 @@
+code,term
+14A6.,H/O: heart failure
+G1yz1,Rheumatic left ventricular failure
+G2101,Malignant hypertensive heart disease with CCF
+G2111,Benign hypertensive heart disease with CCF
+G21z1,Hypertensive heart disease NOS with CCF
+G232.,Hypertensive heart&renal dis wth (congestive) heart failure
+G234.,Hyperten heart&renal dis+both(congestv)heart and renal fail
+G343.,Generalised ischaemic myocardial dysfunction
+G400.,Acute cor pulmonale
+G41..,Chronic pulmonary heart disease
+G41y.,Other chronic pulmonary heart disease
+G41yz,Other chronic pulmonary heart disease NOS
+G41z.,Chronic cor pulmonale (& [NOS])
+G55..,Cardiomyopathy
+G551.,Hypertrophic obstructive cardiomyopathy
+G5540,(Congestive obstructive) or (congestive cardiomyopathy)
+G5543,Hypertrophic cardiomyopathy without obstruction
+G5544,Primary dilated cardiomyopathy
+G55z.,Cardiomyopathy NOS
+G58..,Heart failure
+G580.,Heart failure: [right] or [congestive]
+G5800,Acute congestive heart failure
+G5801,Chronic congestive heart failure
+G5802,Decompensated cardiac failure
+G5803,Compensated cardiac failure
+G581.,(L ventric:[fail][imp func]) or (card asth) or (ac pulm oed)
+G5810,Acute left ventricular failure
+G582.,Acute heart failure
+G58z.,Heart: [weak] or [failure NOS]
+G5y1.,Myocardial degeneration
+G5y4.,Post cardiac operation functional disturbance
+G5y40,Postcardiotomy syndrome
+G5y4z,Post cardiac operation heart failure NOS
+Gyu5M,[X]Other hypertrophic cardiomyopathy
+SP111,[Cardiac insuffic] or [heart fail] as a complication of care
+SP2y1,Postcardiotomy syndrome
+X201W,Congestive obstructive cardiomyopathy
+X201Y,Hypertrophic cardiomyopathy
+X201Z,Secondary dilated cardiomyopathy
+X201a,Post-myocarditic cardiomyopathy
+X202k,Heart failure as a complication of care
+X202l,Right ventricular failure
+X202p,Myocardial dysfunction
+X203E,Chronic cor pulmonale
+XE0Un,Chronic pulmonary heart disease NOS
+XE0Uz,Congestive cardiomyopathy
+XE0V8,Biventricular failure
+XE0V9,Heart failure NOS
+XE0WM,(Chronic cor pulmonale) or (pulmonary heart disease NOS)
+XE0Wa,Cardmyopath (& [conges obst][hyper obst]) or endmyocard fibr
+XE0Wo,(Conges card fail)(dropsy)(card insuf)(R hrt fail)(LV fail)
+XE1p9,Cardiac insufficiency as a complication of care
+XE2QG,Left ventricular failure
+XM1Qn,Impaired left ventricular function
+Xa1dP,Ischaemic myocardial dysfunction
+Xa1dQ,Stunned myocardium
+Xa1dR,Hibernating myocardium
+Xa1fq,Arrhythmogenic right ventricular cardiomyopathy
+XaBwi,H/O: Heart failure in last year
+XaEgY,Refractory heart failure
+XaIIU,Congestive heart failure monitoring
+XaIIq,Left ventricular systolic dysfunction
+XaILD,Referral to heart failure clinic
+XaIQM,Heart failure follow-up
+XaIQN,Heart failure annual review
+XaIpn,Heart failure confirmed
+XaItG,Left ventricular diastolic dysfunction
+XaJ98,Echocardiogram shows left ventricular systolic dysfunction
+XaJ99,Echocardiogram shows left ventricular diastolic dysfunction
+XaJ9G,New York Heart Association classification - class I
+XaJ9H,New York Heart Association classification - class II
+XaJ9I,New York Heart Association classification - class III
+XaJ9J,New York Heart Association classification - class IV
+XaK6W,Left ventricular dysfunction monitoring administration
+XaK6X,Left ventricular dysfunction monitoring invitation
+XaK6Y,Left ventricular dysfunction monitoring first letter
+XaK6Z,Left ventricular dysfunction monitoring second letter
+XaK6a,Left ventricular dysfunction monitoring third letter
+XaKNN,Seen in heart failure clinic
+XaKNW,Admit heart failure emergency
+XaKNX,Referral to heart failure nurse
+XaKNa,Seen by community heart failure nurse
+XaKc0,Left ventricular dysfunction monitoring verbal invite
+XaLCj,Referred by heart failure nurse specialist
+XaLGJ,Did not attend practice nurse heart failure clinic
+XaLMw,Heart failure information given to patient
+XaLMx,Referral to heart failure exercise programme
+XaLN6,Heart failure monitoring administration
+XaLN7,Heart failure review completed
+XaLNA,Heart failure care plan discussed with patient
+XaLSI,Referred to heart failure education group
+XaLon,Heart failure 6 month review
+XaMFr,Heart failure monitoring telephone invite
+XaMGm,Left ventricular dysfunction monitoring telephone invite
+XaMGo,Heart failure monitoring verbal invite
+XaMGs,Heart failure monitoring first letter
+XaMGt,Heart failure monitoring second letter
+XaMGu,Heart failure monitoring third letter
+XaMHD,Did not attend heart failure clinic
+XaMJ9,Exception reporting: heart failure quality indicators
+XaMJA,Excepted heart failure quality indicators: Patient unsuitabl
+XaMJB,Excepted heart failure quality indicators: Informed dissent
+XaNUf,Heart failure education
+XaO5n,Congestive heart failure due to valvular disease
+XaQdP,Heart failure self management plan
+XaWyi,Heart failure with normal ejection fraction
+XaXBj,Fast track HF referral for transthoracic 2D echocardiogram
+XaXIR,Referral to heart failure education group declined
+XaXgq,Referral to heart failure exercise programme declined
+XaXkR,Has heart failure management plan
+XaXzw,Preferred place of care for next exacerbation heart failure
+XaYYr,Right ventricular diastolic dysfunction
+XaYYs,Diastolic dysfunction
+XaYZN,Heart failure self-management plan review
+XaYbC,Heart failure self-management plan agreed
+XaYft,Education about deteriorating heart failure
+XaZIC,Rehabilitation for heart failure
+XaZih,Heart failure clinical pathway
+XaaH6,Referral to rapid access heart failure clinic
+Xaacj,Left ventricular cardiac dysfunction
+Xaapw,Right ventricular systolic dysfunction
+XabM9,On optimal heart failure therapy
+XabvP,Heart failure rehabilitation programme not available
+XafeB,Heart failure with reduced ejection fraction
+Y1d74,Heart Failure Rehabilitation Programme Completed
+Y1f20,Heart failure monitoring invitation
+Y1f9c,Quality and Outcomes Framework heart failure quality indicator-related care invitation (procedure)
+Y1f9d,Excepted from heart failure quality indicators - service unavailable (finding)
+Y27b8,LTC care plan agreed using AIRMID - heart failure
+Y27da,Heart failure medication review
+Y2b96,Heart failure with mid range ejection fraction
+Y2c10,Heart failure with recovered ejection fraction
+Y3a03,Heart failure suggested by EkoDuo AI stethescope
+bm...,Vasodilators in heart failure [no drugs here]
+~1754,Heart failure referral Y2474
+~2498,Heart failure referral
