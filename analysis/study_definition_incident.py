@@ -15,7 +15,7 @@ from cohortextractor import (
 from codelists import *
 from common_variables import generate_common_variables
 dummy_data_date= "2020-02-01"
-common_variables = generate_common_variables(index_date_variable="patient_index_date", admission_variable="hf_icd_10")
+common_variables = generate_common_variables(index_date_variable="patient_index_date")
 
 
 # Specify study definition
@@ -62,15 +62,17 @@ study = StudyDefinition(
             codelist=hf_codes,    
             on_or_after="2000-01-01",
             returning="binary_flag",
-            return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}},
+            return_expectations={
+                "incidence": 0.1,}, 
         ), 
    
         hf_secondary_case=patients.admitted_to_hospital(
             with_these_diagnoses=heart_failure_icd_codes,
             returning="binary_flag",
             on_or_after="2000-01-01",
-            return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}},
-        ), 
+            return_expectations={
+                "incidence": 0.1,}, 
+        ),
 
         hf_emerg_case=patients.attended_emergency_care(
             on_or_after="2000-01-01",
@@ -92,8 +94,9 @@ study = StudyDefinition(
                     returning="date",
                     date_format="YYYY-MM-DD",
                     find_first_match_in_period=True,
-                    return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}}, 
-        ), 
+                    return_expectations={
+                    "incidence": 0.1,}, 
+        ),
         
         first_hf_hosp=patients.admitted_to_hospital(
                     with_these_diagnoses=heart_failure_icd_codes,
@@ -101,8 +104,9 @@ study = StudyDefinition(
                     date_format="YYYY-MM-DD",
                     on_or_after="2000-01-01",
                     find_first_match_in_period=True,
-                    return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}},
-        ), 
+                    return_expectations={
+                    "incidence": 0.1,}, 
+        ),
 
         first_hf_emerg=patients.attended_emergency_care(
                     on_or_after="2000-01-01",
