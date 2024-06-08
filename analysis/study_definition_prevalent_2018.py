@@ -57,22 +57,14 @@ study = StudyDefinition(
             codelist=hf_codes,    
             on_or_before="index_date - 1 day",
             returning="binary_flag",
-<<<<<<< Updated upstream:analysis/study_definition_prevalent_2018.py
             return_expectations={"incidence": 0.90, "date": {"earliest" : "2000-01-01", "latest": "today"}},
-=======
-            return_expectations={"incidence": 0.9, "date": {"earliest" : "2000-01-01", "latest": "today"}},
->>>>>>> Stashed changes:analysis/study_definition_prevalent.py
         ), 
    
         hf_secondary_case=patients.admitted_to_hospital(
             with_these_diagnoses=heart_failure_icd_codes,
             returning="binary_flag",
             on_or_before="index_date - 1 day",
-<<<<<<< Updated upstream:analysis/study_definition_prevalent_2018.py
             return_expectations={"incidence": 0.50, "date": {"earliest" : "2000-01-01", "latest": "today"}},
-=======
-            return_expectations={"incidence": 0.5, "date": {"earliest" : "2000-01-01", "latest": "today"}},
->>>>>>> Stashed changes:analysis/study_definition_prevalent.py
         ), 
 
         hf_emerg_case=patients.attended_emergency_care(

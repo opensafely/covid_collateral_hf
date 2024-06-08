@@ -95,7 +95,8 @@ study = StudyDefinition(
                     date_format="YYYY-MM-DD",
                     find_first_match_in_period=True,
                     return_expectations={
-                    "incidence": 0.1,}, 
+                    "incidence": 0.1,
+                    }, 
         ),
         
         first_hf_hosp=patients.admitted_to_hospital(
@@ -105,7 +106,8 @@ study = StudyDefinition(
                     on_or_after="2000-01-01",
                     find_first_match_in_period=True,
                     return_expectations={
-                    "incidence": 0.1,}, 
+                    "incidence": 0.1,
+                    }, 
         ),
 
         first_hf_emerg=patients.attended_emergency_care(

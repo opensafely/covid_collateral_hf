@@ -1,11 +1,7 @@
 version: '3.0'
 
 expectations:
-<<<<<<< Updated upstream
   population_size: 10000
-=======
-  population_size: 100000
->>>>>>> Stashed changes
 
 actions:
   #Study definition 

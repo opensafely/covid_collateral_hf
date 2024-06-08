@@ -3,11 +3,10 @@ from codelists import *
 from datetime import datetime, timedelta
 
 
-def generate_common_variables(index_date_variable, admission_variable):
+def generate_common_variables(index_date_variable):
     common_variables = dict(
 
     # DEMOGRAPHICS - sex, age, ethnicity
-
         ## sex 
         sex=patients.sex(
             return_expectations={
@@ -35,8 +34,10 @@ def generate_common_variables(index_date_variable, admission_variable):
                 "80+": """ age >=  80 AND age < 120""",
             },
             return_expectations={
-                "rate":"universal",
-                "category": {"ratios": {"18-39": 0.3, "40-59": 0.3, "60-79":0.2, "80+":0.2 }}
+                "rate": "universal",
+                "category": {
+                    "ratios": {"18-39": 0.3, "40-59": 0.3, "60-79":0.2, "80+":0.2 }
+                }
             },
         ),
 
@@ -53,20 +54,17 @@ def generate_common_variables(index_date_variable, admission_variable):
         ),
 
     # HOUSEHOLD INFORMATION
-       
         ## care home status - This creates a variable called care_home_type which contains a 2 letter string which represents a type of care home environment. 
         # If the address is not valid, it defaults to an empty string.  Shouldn't have any as am including only those with valid address.
         care_home_type=patients.care_home_status_as_of(
             f"{index_date_variable}",
             categorised_as={
-                "PC":
-                """
+                "PC": """
                 IsPotentialCareHome
                 AND LocationDoesNotRequireNursing='Y'
                 AND LocationRequiresNursing='N'
                 """,
-                "PN":
-                """
+                "PN": """
                 IsPotentialCareHome
                 AND LocationDoesNotRequireNursing='N'
                 AND LocationRequiresNursing='Y'
@@ -77,7 +75,14 @@ def generate_common_variables(index_date_variable, admission_variable):
             },
             return_expectations={
                 "rate": "universal",
-                "category": {"ratios": {"PC": 0.05, "PN": 0.05, "PS": 0.05, "PR": 0.84, "": 0.01},},
+                "category": {
+                    "ratios": {
+                        "PC": 0.05, 
+                        "PN": 0.05, 
+                        "PS": 0.05, 
+                        "PR": 0.84, 
+                        "": 0.01},
+                },
             },
         ),
         
@@ -113,37 +118,46 @@ def generate_common_variables(index_date_variable, admission_variable):
                 },
             ),
 
-         ## REGION     
+        ## REGION     
         region=patients.registered_practice_as_of(
-        f"{index_date_variable}",
-        returning="nuts1_region_name",
-        return_expectations={
-            "rate": "universal",
-            "category": {
-                "ratios": {
-                    "North East": 0.1,
-                    "North West": 0.1,
-                    "Yorkshire and the Humber": 0.1,
-                    "East Midlands": 0.1,
-                    "West Midlands": 0.1,
-                    "East of England": 0.1,
-                    "London": 0.1,
-                    "South West": 0.1,
-                    "South East": 0.2,
+            f"{index_date_variable}",
+            returning="nuts1_region_name",
+            return_expectations={
+                "rate": "universal",
+                "category": {
+                    "ratios": {
+                        "North East": 0.1,
+                        "North West": 0.1,
+                        "Yorkshire and the Humber": 0.1,
+                        "East Midlands": 0.1,
+                        "West Midlands": 0.1,
+                        "East of England": 0.1,
+                        "London": 0.1,
+                        "South West": 0.1,
+                        "South East": 0.2,
+                        },
                     },
                 },
-            },
         ),
    
-
-
         ## URBAN/RURAL LOCATION
         urban=patients.address_as_of(
             f"{index_date_variable}",
             returning="rural_urban_classification",
             return_expectations={
                 "rate": "universal",
-                "category": {"ratios": {1: 0.10, 2: 0.10, 3: 0.10, 4: 0.10, 5: 0.10, 6: 0.10, 7: 0.10, 8: 0.10, 9: 0.20 }},
+                "category": {"ratios": {
+                    1: 0.10, 
+                    2: 0.10, 
+                    3: 0.10, 
+                    4: 0.10, 
+                    5: 0.10, 
+                    6: 0.10, 
+                    7: 0.10, 
+                    8: 0.10, 
+                    9: 0.20 
+                    }
+                },
             }
         ),
 
@@ -159,8 +173,6 @@ def generate_common_variables(index_date_variable, admission_variable):
         ),
 
  
-
-
        ## registered with one practice for 90 days prior to index date        
         has_follow_up=patients.registered_with_one_practice_between(
            f"{index_date_variable} - 90 days", f"{index_date_variable}",
@@ -168,11 +180,7 @@ def generate_common_variables(index_date_variable, admission_variable):
     
         ## date of de-registration
         date_deregistered=patients.date_deregistered_from_all_supported_practices(
-<<<<<<< Updated upstream
-            between= ["2014-07-01", "2024-04-30"],
-=======
-            between=["2018-01-01", "2024-04-30"],
->>>>>>> Stashed changes
+            between=["2018-07-01", "2024-04-30"],
             date_format="YYYY-MM-DD",
         ),
 
@@ -183,64 +191,41 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before=f"{index_date_variable} - 1 day",
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,}, 
-            ), 
+                "incidence": 0.1,
+                }, 
+        ), 
 
         hfpef=patients.with_these_clinical_events(
             codelist=hfpef_codes,    
             on_or_before=f"{index_date_variable}  - 1 day",
             returning="binary_flag",
             return_expectations={
-<<<<<<< Updated upstream
-                "incidence": 0.1,}, 
-            ), 
-
-
-    # HEART FAILURE OUTCOMES
-    # HF HOSPITALISATION - EMERGENCY AND NON EMERGENCY 
-        hf_emerg=patients.attended_emergency_care(
-            on_or_after= f"{index_date_variable}",
-=======
                 "incidence": 0.1,
-            },
-        ),
+                }, 
+        ), 
+
         # HEART FAILURE OUTCOMES
         # HF HOSPITALISATION - EMERGENCY AND NON EMERGENCY
         outhf_emerg=patients.attended_emergency_care(
             on_or_after=f"{index_date_variable}",
->>>>>>> Stashed changes
             with_these_diagnoses=hf_emerg_codes,
             returning="date_arrived",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={
-<<<<<<< Updated upstream
-                "incidence": 0.1,}, 
-            ),
- 
-        heart_failure_primary_admission=patients.admitted_to_hospital(
-=======
                 "incidence": 0.1,
-            },
-        ),
+                }, 
+        ), 
         outhf_secondary=patients.admitted_to_hospital(
->>>>>>> Stashed changes
             with_these_primary_diagnoses=heart_failure_icd_codes,
             on_or_after= f"{index_date_variable}",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
             return_expectations={"date": {"earliest": "2000-01-01"}},
-<<<<<<< Updated upstream
-            ),
-
-        hf_hospitalisation=patients.satisfying(
-            "hf_emerg OR heart_failure_primary_admission",
-=======
         ),
         outhf_hosp=patients.minimum_of(
             "outhf_emerg", "outhf_secondary"
->>>>>>> Stashed changes
         ),
 
     # OUTCOMES - MEDICATION USE
@@ -326,7 +311,8 @@ def generate_common_variables(index_date_variable, admission_variable):
         on_or_after=f"{index_date_variable}",
         returning="date_of_death",
         date_format="YYYY-MM-DD",
-        return_expectations={"date": {"earliest": f"{index_date_variable}"}}
+            return_expectations={
+                "incidence": 0.1,}, 
         ),
 
     cvd_mortality=patients.with_these_codes_on_death_certificate(
@@ -335,8 +321,9 @@ def generate_common_variables(index_date_variable, admission_variable):
         match_only_underlying_cause=True,
         returning="date_of_death",
         date_format="YYYY-MM-DD",
-        return_expectations={"date": {"earliest": f"{index_date_variable}"}}
-        ),  
+            return_expectations={
+                "incidence": 0.1,}, 
+        ),
 
     hf_mortality=patients.with_these_codes_on_death_certificate(
         heart_failure_icd_codes,
@@ -344,8 +331,9 @@ def generate_common_variables(index_date_variable, admission_variable):
         match_only_underlying_cause=True,
         returning="date_of_death",
         date_format="YYYY-MM-DD",
-        return_expectations={"date": {"earliest": f"{index_date_variable}"}}
-        ),  
+            return_expectations={
+                "incidence": 0.1,}, 
+        ),
 
     # FALLS AND FRACTURES - PRIMARY CARE, EMERGENCY CARE, HOSPITAL ADMISSION
         falls_primary_care=patients.with_these_clinical_events(
@@ -354,23 +342,9 @@ def generate_common_variables(index_date_variable, admission_variable):
             returning="date",
             date_format="YYYY-MM-DD",
             return_expectations={
-<<<<<<< Updated upstream
                 "incidence": 0.1,}, 
             ), 
 
-=======
-                "incidence": 0.1,
-            },
-        ),
-        falls_recent=patients.with_these_clinical_events(
-            codelist=falls_codes,
-            between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
-            returning="binary_flag",
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
->>>>>>> Stashed changes
         falls_emerg=patients.attended_emergency_care(
      		on_or_after=f"{index_date_variable}",
             with_these_diagnoses=falls_codes_snomed,
@@ -386,92 +360,60 @@ def generate_common_variables(index_date_variable, admission_variable):
             date_format="YYYY-MM-DD",
      		on_or_after=f"{index_date_variable}",
             find_first_match_in_period=True,
-<<<<<<< Updated upstream
-        return_expectations={"date": {"earliest": f"{index_date_variable}"}}
+            return_expectations={
+            "incidence": 0.1,}, 
             ),
 
-        falls_or_fractures=patients.satisfying(
-            "falls_primary_care OR falls_emerg OR fracture_icd_10",
+        falls_or_fractures=patients.minimum_of(
+            "falls_primary_care", "falls_emerg", "fracture_icd_10"
         ),
 
-    # AMPUTATION - PRIMARY CARE AND OPCS CODES
-=======
-            return_expectations={"incidence": 0.1,},
-        ),
         # AMPUTATION - PRIMARY CARE AND OPCS CODES
->>>>>>> Stashed changes
         amputation_primary_care=patients.with_these_clinical_events(
             codelist=amputation_codes,    
             on_or_after=f"{index_date_variable}",
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-<<<<<<< Updated upstream
             return_expectations={"incidence": 0.1,}, 
             ), 
  
-=======
-            return_expectations={
-                "incidence": 0.01,
-            },
-        ),
-        amputation_recent=patients.with_these_clinical_events(
-            codelist=amputation_codes,
-            between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
-            returning="binary_flag",
-            return_expectations={
-                "incidence": 0.01,
-            },
-        ),
->>>>>>> Stashed changes
         amputation_opcs4=patients.admitted_to_hospital(
             with_these_procedures=amputation_opcs_4_codes,
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             on_or_after=f"{index_date_variable}",
             find_first_match_in_period=True,
-<<<<<<< Updated upstream
-            return_expectations={"date": {"earliest": f"{index_date_variable}"}}
+            return_expectations={
+            "incidence": 0.1,}, 
             ),
 
-        amputation=patients.satisfying(
-            "amputation_primary_care OR amputation_opcs4",
-        ),
+        amputation=patients.minimum_of(
+            "amputation_primary_care", "amputation_opcs4"
+            ),
 
     # ALL HOSPITALISATION - EMERGENCY AND NON EMERGENCY
-=======
-            return_expectations={"incidence": 0.01,},
-        ),
-
-        # ALL HOSPITALISATION - EMERGENCY AND NON EMERGENCY
->>>>>>> Stashed changes
         emerg_hosp=patients.attended_emergency_care(
             on_or_after=f"{index_date_variable}",
             returning="date_arrived",
              date_format="YYYY-MM-DD",
            find_first_match_in_period=True,
             return_expectations={
-            "incidence": 0.1,
-            }, 
+            "incidence": 0.1,}, 
             ),
         admitted_hosp=patients.admitted_to_hospital(
             on_or_after=f"{index_date_variable}",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
-            return_expectations={"date": {"earliest": "today"}},
-<<<<<<< Updated upstream
+            return_expectations={
+            "incidence": 0.1,}, 
             ),
 
-# CVD HOSPITALISATION - EMERGENCY AND NON EMERGENCY
-=======
-        ),
-        all_hosps=patients.minimum_of(
-            "emerg_hosp", "admitted_hosp"
-        ),
+        all_hosp_fup=patients.minimum_of(
+            "emerg_hosp", "admitted_hosp"),
 
-        # CVD HOSPITALISATION - EMERGENCY AND NON EMERGENCY
->>>>>>> Stashed changes
+# CVD HOSPITALISATION - EMERGENCY AND NON EMERGENCY
         mace_emerg=patients.attended_emergency_care(
             on_or_after=f"{index_date_variable}",
             with_these_diagnoses=mace_emerg_codes,
@@ -479,8 +421,7 @@ def generate_common_variables(index_date_variable, admission_variable):
              date_format="YYYY-MM-DD",
            find_first_match_in_period=True,
             return_expectations={
-            "incidence": 0.1,
-            }, 
+            "incidence": 0.1,}, 
             ),
 
         cvd_primary_admission=patients.admitted_to_hospital(
@@ -489,59 +430,33 @@ def generate_common_variables(index_date_variable, admission_variable):
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
-            return_expectations={"date": {"earliest": "today"}},
-<<<<<<< Updated upstream
+            return_expectations={
+            "incidence": 0.1,}, 
             ),
 
-    # HYPOKALAEMIA AND HYPONATRAEMIA
-=======
-        ),
-        all_cvd_hosps=patients.minimum_of(
+        all_cvd_fup=patients.minimum_of(
             "mace_emerg", "cvd_primary_admission"
         ),
 
-        # HYPOKALAEMIA AND HYPONATRAEMIA
->>>>>>> Stashed changes
+    # HYPOKALAEMIA AND HYPONATRAEMIA
         hypokalaemia_primary_care=patients.with_these_clinical_events(
             codelist=hypokal_codes,    
             on_or_after=f"{index_date_variable}",
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-<<<<<<< Updated upstream
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
 
-=======
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
-        hypokalaemia_recent=patients.with_these_clinical_events(
-            codelist=hypokal_codes,
-            between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
-            returning="binary_flag",
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
->>>>>>> Stashed changes
         hyponatraemia_primary_care=patients.with_these_clinical_events(
             codelist=hyponat_codes,    
             on_or_after=f"{index_date_variable}",
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-<<<<<<< Updated upstream
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
 
-    # DIABETES
-=======
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
         hyponatraemia_recent=patients.with_these_clinical_events(
             codelist=hyponat_codes,
             between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
@@ -551,7 +466,6 @@ def generate_common_variables(index_date_variable, admission_variable):
             },
         ),
         # DIABETES
->>>>>>> Stashed changes
         previous_diabetes=patients.with_these_clinical_events(
             combine_codelists(
                 diabetes_t1_codes, diabetes_t2_codes, diabetes_unknown_codes
@@ -572,22 +486,19 @@ def generate_common_variables(index_date_variable, admission_variable):
 
         dka_primary_care=patients.with_these_clinical_events(
             codelist=dka_codes,    
-            on_or_after=f"{index_date_variable}",
+            between=["1980-01-01", "2024-04-30"],
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
-<<<<<<< Updated upstream
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
         
+        all_dka=patients.minimum_of(
+            "dka_hosp", "dka_primary_care"
+        ),
         
 
     # ACUTE KIDNEY INJURY
-=======
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
         dka_recent=patients.with_these_clinical_events(
             codelist=dka_codes,
             between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
@@ -597,15 +508,15 @@ def generate_common_variables(index_date_variable, admission_variable):
             },
         ),
         # ACUTE KIDNEY INJURY
->>>>>>> Stashed changes
         aki=patients.admitted_to_hospital(
             with_these_primary_diagnoses=aki_icd_codes,
             on_or_after=f"{index_date_variable}",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
-        return_expectations={"date": {"earliest": f"{index_date_variable}"}}
-        ),
+            return_expectations={
+            "incidence": 0.1,}, 
+            ),
 
     # CONTRINDICATIONS TO MEDICATIONS
         arb_contraindications=patients.with_these_clinical_events(
@@ -617,7 +528,7 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
         
         acei_contraindications=patients.with_these_clinical_events(
             combine_codelists(
@@ -628,21 +539,21 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
 
         bb_contraindications=patients.with_these_clinical_events(
             codelist=bb_contra_codes, 
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
 
         mra_contraindications=patients.with_these_clinical_events(
             codelist=mra_contra_codes, 
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
  
     # COVARIATES
         cld=patients.with_these_clinical_events(
@@ -650,14 +561,14 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
 
         af=patients.with_these_clinical_events(
             codelist=af_codes, 
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
  
         efi = patients.with_these_decision_support_values(
             algorithm = "electronic_frailty_index",
@@ -669,7 +580,7 @@ def generate_common_variables(index_date_variable, admission_variable):
                 "float": {"distribution": "normal", "mean": 0.15, "stddev": 0.05},
                 "incidence": 0.99
             },
-            ),
+        ),
 
         hypertension=patients.with_these_clinical_events(
             codelist=hypertension_codes, 
@@ -683,14 +594,14 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
 
         sleep_ap=patients.with_these_clinical_events(
             codelist=sleep_apnoea_codes, 
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
  
         ckd_stage12=patients.with_these_clinical_events(
             codelist=ckd_12_codes, 
@@ -704,14 +615,14 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
  
-         copd=patients.with_these_clinical_events(
+        copd=patients.with_these_clinical_events(
             codelist=copd_codes, 
             on_or_before= f"{index_date_variable}",
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
-            ), 
+        ), 
  
         creatinine=patients.with_these_clinical_events(
             creatinine_codes,
@@ -750,7 +661,6 @@ def generate_common_variables(index_date_variable, admission_variable):
             on_or_before= f"{index_date_variable}",
             ),
         ),
-
 
 
 )
