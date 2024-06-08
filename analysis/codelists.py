@@ -32,16 +32,6 @@ hfpef_codes = codelist_from_csv(
     column="code",)
 
 
-hypokal_codes = codelist_from_csv(
-    "codelists/user-emilyherrett-hypokalaemia.csv",
-    system="ctv3",
-    column="code",)
-
-hyponat_codes = codelist_from_csv(
-    "codelists/user-emilyherrett-hyponatraemia.csv",
-    system="ctv3",
-    column="code",)
-
 amputation_codes = codelist_from_csv(
     "codelists/opensafely-amputation-of-lower-limb.csv",
     system="ctv3",
@@ -155,7 +145,12 @@ ckd_12_codes=codelist_from_csv(
     column="code", )
 
 ckd_35_codes=codelist_from_csv(
-    "codelists/nhsd-primary-care-domain-refsets-ckd_cod.csv",
+    "codelists/nhsd-primary-care-domain-refsets-ckdatrisk2_cod.csv",  
+    system="snomed",
+    column="code", )
+
+ckd_45_codes=codelist_from_csv(
+    "codelists/nhsd-primary-care-domain-refsets-ckdatrisk1_cod.csv",
     system="snomed",
     column="code", )
 
@@ -223,6 +218,16 @@ cvd_icd_codes = codelist_from_csv(
     "codelists/opensafely-cardiovascular-secondary-care.csv",
     system="icd10",
     column="icd",)
+
+hyperkal_codes = codelist_from_csv(
+    "codelists/user-emilyherrett-hyperkalaemia-icd10.csv",
+    system="icd10",
+    column="code",)
+
+hyponat_codes = codelist_from_csv(
+    "codelists/user-emilyherrett-hyponatraemia-icd10.csv",
+    system="icd10",
+    column="code",)
 
     # OPCS-4    
 kidney_replacement_therapy_opcs_4_codes = codelist_from_csv(

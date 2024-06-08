@@ -218,14 +218,46 @@ def generate_common_variables(index_date_variable):
         ), 
         outhf_secondary=patients.admitted_to_hospital(
             with_these_primary_diagnoses=heart_failure_icd_codes,
-            on_or_after= f"{index_date_variable}",
+            on_or_after=f"{index_date_variable}",
             returning="date_admitted",
-            find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
-            return_expectations={"date": {"earliest": "2000-01-01"}},
-        ),
+            find_first_match_in_period=True,
+            return_expectations={
+                "incidence": 0.1,
+                }, 
+        ), 
         outhf_hosp=patients.minimum_of(
             "outhf_emerg", "outhf_secondary"
+        ),
+
+        # N HF HOSPITALISATIONS - EMERGENCY AND NON EMERGENCY
+        n_outhf_emerg=patients.attended_emergency_care(
+            between=[f"{index_date_variable}", "2024-05-01"],
+            with_these_diagnoses=hf_emerg_codes,
+            returning="number_of_matches_in_period",
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
+
+        n_outhf_secondary=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=heart_failure_icd_codes,
+            between=[f"{index_date_variable}", "2024-05-01"],
+            returning="number_of_matches_in_period",
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
+
+        # N HF HOSPITALISATIONS ONE YEAR - EMERGENCY AND NON EMERGENCY
+        n_outhf_emerg1yr=patients.attended_emergency_care(
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            with_these_diagnoses=hf_emerg_codes,
+            returning="number_of_matches_in_period",
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
+
+        n_outhf_secondary1yr=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=heart_failure_icd_codes,
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            returning="number_of_matches_in_period",
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
 
     # OUTCOMES - MEDICATION USE
@@ -367,7 +399,12 @@ def generate_common_variables(index_date_variable):
         falls_or_fractures=patients.minimum_of(
             "falls_primary_care", "falls_emerg", "fracture_icd_10"
         ),
-
+        n_fracture_icd_10=patients.admitted_to_hospital(
+            with_these_diagnoses=fracture_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", "2024-05-01"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
         # AMPUTATION - PRIMARY CARE AND OPCS CODES
         amputation_primary_care=patients.with_these_clinical_events(
             codelist=amputation_codes,    
@@ -401,6 +438,21 @@ def generate_common_variables(index_date_variable):
             return_expectations={
             "incidence": 0.1,}, 
             ),
+        n_emerg_hosp=patients.attended_emergency_care(
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", "2024-05-01"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
+        n_emerg_hosp1yr=patients.attended_emergency_care(
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
+        n_emerg_hosp2yr=patients.attended_emergency_care(
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 2 years"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
         admitted_hosp=patients.admitted_to_hospital(
             on_or_after=f"{index_date_variable}",
             returning="date_admitted",
@@ -409,9 +461,26 @@ def generate_common_variables(index_date_variable):
             return_expectations={
             "incidence": 0.1,}, 
             ),
+        n_admitted_hosp=patients.admitted_to_hospital(
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", "2024-05-01"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
+        n_admitted_hosp1yr=patients.admitted_to_hospital(
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
+        n_admitted_hosp2yr=patients.admitted_to_hospital(
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 2 years"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
 
         all_hosp_fup=patients.minimum_of(
             "emerg_hosp", "admitted_hosp"),
+
+
 
 # CVD HOSPITALISATION - EMERGENCY AND NON EMERGENCY
         mace_emerg=patients.attended_emergency_care(
@@ -437,34 +506,44 @@ def generate_common_variables(index_date_variable):
         all_cvd_fup=patients.minimum_of(
             "mace_emerg", "cvd_primary_admission"
         ),
+        n_cvd_admissions=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=cvd_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", "2024-05-01"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+            ),
+        n_cvd_admissions1yr=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=cvd_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+            ),
+        n_cvd_admissions2yr=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=cvd_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 2 years"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+            ),
 
-    # HYPOKALAEMIA AND HYPONATRAEMIA
-        hypokalaemia_primary_care=patients.with_these_clinical_events(
-            codelist=hypokal_codes,    
+    # HYPERKALAEMIA AND HYPONATRAEMIA
+        hyperkalaemia=patients.admitted_to_hospital(
+            with_these_diagnoses=hyperkal_codes,    
             on_or_after=f"{index_date_variable}",
-            returning="date",
+            returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={"incidence": 0.1,}, 
         ), 
 
-        hyponatraemia_primary_care=patients.with_these_clinical_events(
-            codelist=hyponat_codes,    
+        hyponatraemia=patients.admitted_to_hospital(
+            with_these_diagnoses=hyponat_codes,    
             on_or_after=f"{index_date_variable}",
-            returning="date",
+            returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
             return_expectations={"incidence": 0.1,}, 
         ), 
 
-        hyponatraemia_recent=patients.with_these_clinical_events(
-            codelist=hyponat_codes,
-            between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
-            returning="binary_flag",
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
         # DIABETES
         previous_diabetes=patients.with_these_clinical_events(
             combine_codelists(
@@ -483,31 +562,26 @@ def generate_common_variables(index_date_variable):
             date_format="YYYY-MM-DD",
             return_expectations={"incidence": 0.1,},
         ),
-
-        dka_primary_care=patients.with_these_clinical_events(
-            codelist=dka_codes,    
-            between=["1980-01-01", "2024-04-30"],
-            returning="date",
-            date_format="YYYY-MM-DD",
-            find_first_match_in_period=True,
-            return_expectations={"incidence": 0.1,}, 
-        ), 
-        
-        all_dka=patients.minimum_of(
-            "dka_hosp", "dka_primary_care"
-        ),
-        
+        n_dka_hosps=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=dm_keto_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", "2024-05-01"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+            ),
+        n_dka_hosps1yr=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=dm_keto_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+            ),
+        n_dka_hosps2yr=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=dm_keto_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable}+ 2 years"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+            ),
 
     # ACUTE KIDNEY INJURY
-        dka_recent=patients.with_these_clinical_events(
-            codelist=dka_codes,
-            between=[f"{index_date_variable} - 3 months", f"{index_date_variable}"],
-            returning="binary_flag",
-            return_expectations={
-                "incidence": 0.1,
-            },
-        ),
-        # ACUTE KIDNEY INJURY
         aki=patients.admitted_to_hospital(
             with_these_primary_diagnoses=aki_icd_codes,
             on_or_after=f"{index_date_variable}",
@@ -606,6 +680,7 @@ def generate_common_variables(index_date_variable):
         ckd_stage12=patients.with_these_clinical_events(
             codelist=ckd_12_codes, 
             on_or_before= f"{index_date_variable}",
+            find_last_match_in_period=True,
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
             ), 
@@ -613,10 +688,19 @@ def generate_common_variables(index_date_variable):
         ckd_stage35=patients.with_these_clinical_events(
             codelist=ckd_35_codes, 
             on_or_before= f"{index_date_variable}",
+            find_last_match_in_period=True,
             returning="binary_flag",
             return_expectations={"incidence": 0.1,}, 
         ), 
- 
+
+        ckd_stage45=patients.with_these_clinical_events(
+            codelist=ckd_45_codes, 
+            on_or_before= f"{index_date_variable}",
+            find_last_match_in_period=True,
+            returning="binary_flag",
+            return_expectations={"incidence": 0.1,}, 
+        ), 
+
         copd=patients.with_these_clinical_events(
             codelist=copd_codes, 
             on_or_before= f"{index_date_variable}",

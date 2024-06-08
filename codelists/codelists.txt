@@ -38,12 +38,14 @@ nhsd-primary-care-domain-refsets/aiidec_cod/7a74dc1f
 nhsd-primary-care-domain-refsets/acedec_cod/750f5c33
 nhsd-primary-care-domain-refsets/xace_cod/5ac7be2c
 nhsd-primary-care-domain-refsets/txace_cod/6bbef17f
-user/emilyherrett/hypokalaemia/28096a5c
-user/emilyherrett/hyponatraemia/0ef9f727
+user/emilyherrett/hyponatraemia-icd10/6ef79ce7
+user/emilyherrett/hyperkalaemia-icd10/55e829b2
 user/emilyherrett/sleep-apnoea/75ea83f1
 user/emilyherrett/heart-failure-ctv3/66df5d05
 user/emilyherrett/hfref/4b1d29da
 user/emilyherrett/hfpef/05545027
+nhsd-primary-care-domain-refsets/ckdatrisk1_cod/08a67d83
+nhsd-primary-care-domain-refsets/ckdatrisk2_cod/6f970a4d
 nhsd-primary-care-domain-refsets/ckd1and2_cod/46c88e97
 nhsd-primary-care-domain-refsets/ckd_cod/5fd801cc
 nhsd-primary-care-domain-refsets/copd_cod/0b593d79
