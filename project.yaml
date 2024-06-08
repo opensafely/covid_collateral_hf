@@ -1,15 +1,45 @@
 version: '3.0'
 
 expectations:
-  population_size: 1000
+  population_size: 10000
 
 actions:
   #Study definition 
-  generate_study_population_prevalent:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent
+  generate_study_population_prevalent_2018:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent_2018
     outputs:
       highly_sensitive:
-        cohort: output/input_prevalent.csv
+        cohort: output/input_prevalent_2018.csv
+
+  generate_study_population_prevalent_2019:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent_2019
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevalent_2019.csv
+
+  generate_study_population_prevalent_2020:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent_2020
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevalent_2020.csv
+
+  generate_study_population_prevalent_2021:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent_2021
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevalent_2021.csv
+
+  generate_study_population_prevalent_2022:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent_2022
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevalent_2022.csv
+
+  generate_study_population_prevalent_2023:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevalent_2023
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevalent_2023.csv
 
   generate_study_population_incident:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_incident

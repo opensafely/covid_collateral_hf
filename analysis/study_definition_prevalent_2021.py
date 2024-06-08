@@ -1,6 +1,7 @@
-# STUDY DEFINITION FOR BASELINE CHARACTERISTICS - INCIDENT HEART FAILURE POPULATION
+# STUDY DEFINITION FOR BASELINE CHARACTERISTICS - PREVALENT HEART FAILURE POPULATION
 
 # Import necessary functions
+
 from cohortextractor import (
     StudyDefinition, 
     patients, 
@@ -14,9 +15,7 @@ from cohortextractor import (
 # Import all codelists
 from codelists import *
 from common_variables import generate_common_variables
-dummy_data_date= "2020-02-01"
-common_variables = generate_common_variables(index_date_variable="patient_index_date", admission_variable="hf_icd_10")
-
+common_variables = generate_common_variables(index_date_variable="index_date")
 
 # Specify study definition
 study = StudyDefinition(
@@ -30,9 +29,8 @@ study = StudyDefinition(
     # all the study definitions have to have a study population definition - this selects all the patients for whom you want information
     # use the "patients.satisfying()" function to combine information from multiple different variables
     
-    # define the study index date - this is earliest heart failure date
-    # index_date="earliest_hf",    
-    # index_date="2018-07-01",    
+    # define the study index date - this is mid year for prevalent cohorts
+    index_date="2021-07-01",    
 
     # INCLUDE: age 18+ on date of study, male or female, registered with TPP at index date, with 3 months complete registration, a valid address and postcode
     # EXCLUDE:missing age, missing sex, missing region, missing IMD, 
@@ -40,13 +38,11 @@ study = StudyDefinition(
     population=patients.satisfying(
         # first argument is a string defining the population of interest using elementary logic syntax (= != < <= >= > AND OR NOT + - * /)
         """
-        (hf_primary_case OR
-        hf_secondary_case OR
-        hf_emerg_case) AND
         (age >= 18 AND age < 120) AND 
         is_registered_with_tpp AND 
-        (NOT hfpef) AND
         (NOT died) AND
+        heart_failure_index = "1" AND
+        (NOT hfpef) AND
         (sex = "M" OR sex = "F") AND 
         has_follow_up AND
         (region != "") AND
@@ -54,71 +50,71 @@ study = StudyDefinition(
         """,         
     ),
 
-    index_date="2000-01-01",
     # define the study variables
 
     # HEART FAILURE STUDY POPULATION 
         hf_primary_case=patients.with_these_clinical_events(
             codelist=hf_codes,    
-            on_or_after="2000-01-01",
+            on_or_before="index_date - 1 day",
             returning="binary_flag",
-            return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}},
+            return_expectations={"incidence": 0.90, "date": {"earliest" : "2000-01-01", "latest": "today"}},
         ), 
    
         hf_secondary_case=patients.admitted_to_hospital(
             with_these_diagnoses=heart_failure_icd_codes,
             returning="binary_flag",
-            on_or_after="2000-01-01",
-            return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}},
+            on_or_before="index_date - 1 day",
+            return_expectations={"incidence": 0.50, "date": {"earliest" : "2000-01-01", "latest": "today"}},
         ), 
 
         hf_emerg_case=patients.attended_emergency_care(
-            on_or_after="2000-01-01",
+            on_or_before="index_date - 1 day",
             with_these_diagnoses=hf_emerg_codes,
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.4,
             }, 
-            ),
+        ),
  
-        hf_case=patients.satisfying(
+        heart_failure_index=patients.satisfying(
             "hf_primary_case OR hf_secondary_case OR hf_emerg_case",
         ),
 
-        # HEART FAILURE DATES 
+    # HEART FAILURE DATES 
         first_hf_primary=patients.with_these_clinical_events(
-                    codelist=hf_codes,    
-                    on_or_after="2000-01-01",
-                    returning="date",
-                    date_format="YYYY-MM-DD",
-                    find_first_match_in_period=True,
-                    return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}}, 
+            codelist=hf_codes,    
+            on_or_before="index_date - 1 day",
+            returning="date",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={"incidence": 0.90, "date": {"earliest" : "2000-01-01", "latest": "today"}},
         ), 
-        
-        first_hf_hosp=patients.admitted_to_hospital(
-                    with_these_diagnoses=heart_failure_icd_codes,
-                    returning="date_admitted",
-                    date_format="YYYY-MM-DD",
-                    on_or_after="2000-01-01",
-                    find_first_match_in_period=True,
-                    return_expectations={"incidence": 0.10, "date": {"earliest" : "2000-01-01", "latest": "today"}},
+   
+        first_hf_secondary=patients.admitted_to_hospital(
+            with_these_diagnoses=heart_failure_icd_codes,
+            returning="date_admitted",
+            date_format="YYYY-MM-DD",
+            on_or_before="index_date - 1 day",
+            find_first_match_in_period=True,
+            return_expectations={"incidence": 0.50, "date": {"earliest" : "2000-01-01", "latest": "today"}},
         ), 
 
         first_hf_emerg=patients.attended_emergency_care(
-                    on_or_after="2000-01-01",
-                    with_these_diagnoses=hf_emerg_codes,
-                    returning="date_arrived",
-                    date_format="YYYY-MM-DD",
-                    find_first_match_in_period=True,
-                    return_expectations={
-                        "incidence": 0.1,
-                    }, 
-        ),
-
-        patient_index_date=patients.minimum_of(
-            "first_hf_primary", "first_hf_hosp", "first_hf_emerg"
+            on_or_before="index_date - 1 day",
+            with_these_diagnoses=hf_emerg_codes,
+            returning="date_arrived",
+            date_format="YYYY-MM-DD",
+            find_first_match_in_period=True,
+            return_expectations={
+                "incidence": 0.4,
+            }, 
             ),
         
+        patient_index_date=patients.minimum_of(
+            "first_hf_primary", "first_hf_secondary", "first_hf_emerg"
+        ),
 
-    **common_variables
+   
+
+**common_variables
 )
