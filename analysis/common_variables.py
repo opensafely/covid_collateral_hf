@@ -252,10 +252,24 @@ def generate_common_variables(index_date_variable):
             returning="number_of_matches_in_period",
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
-
         n_outhf_secondary1yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=heart_failure_icd_codes,
             between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            returning="number_of_matches_in_period",
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ),
+
+        # N HF HOSPITALISATIONS ONE YEAR - EMERGENCY AND NON EMERGENCY
+        n_outhf_emerg2yr=patients.attended_emergency_care(
+            between=[f"{index_date_variable}", f"{index_date_variable} + 2 years"],
+            with_these_diagnoses=hf_emerg_codes,
+            returning="number_of_matches_in_period",
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
+
+        n_outhf_secondary2yr=patients.admitted_to_hospital(
+            with_these_primary_diagnoses=heart_failure_icd_codes,
+            between=[f"{index_date_variable}", f"{index_date_variable} + 2 years"],
             returning="number_of_matches_in_period",
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),

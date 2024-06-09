@@ -99,7 +99,7 @@ study = StudyDefinition(
                     }, 
         ),
         
-        first_hf_hosp=patients.admitted_to_hospital(
+        first_hf_secondary=patients.admitted_to_hospital(
                     with_these_diagnoses=heart_failure_icd_codes,
                     returning="date_admitted",
                     date_format="YYYY-MM-DD",
@@ -122,7 +122,7 @@ study = StudyDefinition(
         ),
 
         patient_index_date=patients.minimum_of(
-            "first_hf_primary", "first_hf_hosp", "first_hf_emerg"
+            "first_hf_primary", "first_hf_secondary", "first_hf_emerg"
             ),
         
 
