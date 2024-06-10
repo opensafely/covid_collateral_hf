@@ -54,3 +54,9 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/prevalent_cohort*.dta      
+  generate_analysis_dataset_incident:
+    run: stata-mp:latest analysis/001_cr_define_covariates_hfref_incident.do
+    needs: [generate_study_population_incident]
+    outputs:
+      highly_sensitive:
+        cohort: output/incident_cohort*.dta      
