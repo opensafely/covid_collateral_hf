@@ -91,5 +91,5 @@ postclose `measures'
 use "$tabfigdir/incident_rates_summary_`hftype'", replace
 
 export delimited using "$tabfigdir/incident_rates_summary_`hftype'.csv", replace
-
+erase "$tabfigdir/incident_rates_summary_`hftype'.dta"
 }

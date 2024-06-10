@@ -87,7 +87,7 @@ postclose `measures'
 * Change postfiles to csv
 use "$tabfigdir/rates_summary_`hftype'_`year'", replace
 
-export delimited using "$tabfigdir/rates_summary_`hftype'`year'.csv", replace
-
+export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'`year'.csv", replace
+erase "$tabfigdir/rates_summary_`hftype'_`year'.dta"
 }
 }

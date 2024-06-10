@@ -1,6 +1,6 @@
 ********************************************************************************
 *
-*	Do-file:		102_cr_rates_repeated_hosp_prevalent.do
+*	Do-file:		103_cr_rates_repeated_hosp_incident.do
 *
 *	Programmed by:	Emily Herrett (based on John & Alex)
 *
@@ -17,10 +17,6 @@
 *	Note:			need to add automatic redaction	
 ********************************************************************************
 do "`c(pwd)'/analysis/global.do"
-
-/*	foreach out in all_hosp_fup outhf_hosp all_cvd_fup  dka_hosp s{
-
-				*/
 
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
@@ -99,6 +95,6 @@ postclose `measures'
 * Change postfiles to csv
 use "$tabfigdir/incident_rates_repeated_`hftype'_`year'", clear
 export delimited using "$tabfigdir/incident_rates_repeated_`hftype'_`year'.csv", replace
-
+erase "$tabfigdir/incident_rates_repeated_`hftype'_`year'.dta"
 }
 }

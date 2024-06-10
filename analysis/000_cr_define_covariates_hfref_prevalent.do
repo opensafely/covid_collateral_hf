@@ -25,8 +25,6 @@ foreach year in `years' {
 import delimited "$outdir/input_prevalent_`year'.csv", clear
 *import delimited "$outdir/input_prevalent_2018.csv", clear
 
-display d(01june2024)
-local end_date=23528
 
 	di "STARTING COUNT FROM IMPORT:"
 
@@ -349,6 +347,9 @@ capture confirm string variable `var'
 
 		
 *Define end date - end of study (currently set to 1st June 2024), end of registration, death, 
+display d(01june2024)
+local end_date=23528
+
 	rename date_deregistered_date deregistered_date
 	gen enddate=min(allcause_mortality_date, deregistered_date, `end_date')
 	format enddate %td

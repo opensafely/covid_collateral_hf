@@ -1,6 +1,6 @@
 ********************************************************************************
 *
-*	Do-file:		102_cr_rates_repeated_hosp_prevalent.do
+*	Do-file:		203_cr_rates_repeated_hosp_prevalent.do
 *
 *	Programmed by:	Emily Herrett (based on John & Alex)
 *
@@ -30,7 +30,7 @@ foreach year in `years' {
 	global stratifiers "agegroup male ethnicity imd region_9 duration_hf_yrs previous_diabetes ckd cld"
 	*efi_cat
 	tempname measures																	 
-	postfile `measures' float(year) str25(outcome) str20(variable) category float(rate) float(ll) float(ul) using "$tabfigdir/rates_repeated_`hftype'_`year'", replace
+	postfile `measures' float(year) str25(outcome) str20(variable) category float(rate) float(ll) float(ul) using "$tabfigdir/prevalent_rates_repeated_`hftype'_`year'", replace
 	local d " "1yr" "2yr" "5yr" "
 	foreach x in `d' {
 		local enddatenow= "enddate`x'"
@@ -80,8 +80,8 @@ foreach year in `years' {
 postclose `measures'
 
 * Change postfiles to csv
-use "$tabfigdir/rates_repeated_`hftype'_`year'", clear
-export delimited using "$tabfigdir/rates_repeated_`hftype'_`year'.csv", replace
-
+use "$tabfigdir/prevalent_rates_repeated_`hftype'_`year'", clear
+export delimited using "$tabfigdir/prevalent_rates_repeated_`hftype'_`year'.csv", replace
+erase "$tabfigdir/prevalent_rates_repeated_`hftype'_`year'.dta"
 }
 }
