@@ -40,9 +40,9 @@ study = StudyDefinition(
     population=patients.satisfying(
         # first argument is a string defining the population of interest using elementary logic syntax (= != < <= >= > AND OR NOT + - * /)
         """
-        (hf_primary_case OR
-        hf_secondary_case OR
-        hf_emerg_case) AND
+        (hf_primary_case = "1" OR
+        hf_secondary_case = "1" OR
+        hf_emerg_case = "1") AND
         (age >= 18 AND age < 120) AND 
         is_registered_with_tpp AND 
         (NOT hfpef) AND
@@ -63,7 +63,7 @@ study = StudyDefinition(
             on_or_after="2000-01-01",
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,}, 
+                "incidence": 0.9,}, 
         ), 
    
         hf_secondary_case=patients.admitted_to_hospital(
@@ -71,7 +71,7 @@ study = StudyDefinition(
             returning="binary_flag",
             on_or_after="2000-01-01",
             return_expectations={
-                "incidence": 0.1,}, 
+                "incidence": 0.9,}, 
         ),
 
         hf_emerg_case=patients.attended_emergency_care(
@@ -79,7 +79,7 @@ study = StudyDefinition(
             with_these_diagnoses=hf_emerg_codes,
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.9,
             }, 
             ),
  
@@ -95,7 +95,7 @@ study = StudyDefinition(
                     date_format="YYYY-MM-DD",
                     find_first_match_in_period=True,
                     return_expectations={
-                    "incidence": 0.1,
+                    "incidence": 0.9,
                     }, 
         ),
         
@@ -106,7 +106,7 @@ study = StudyDefinition(
                     on_or_after="2000-01-01",
                     find_first_match_in_period=True,
                     return_expectations={
-                    "incidence": 0.1,
+                    "incidence": 0.9,
                     }, 
         ),
 
@@ -117,7 +117,7 @@ study = StudyDefinition(
                     date_format="YYYY-MM-DD",
                     find_first_match_in_period=True,
                     return_expectations={
-                        "incidence": 0.1,
+                        "incidence": 0.9,
                     }, 
         ),
 

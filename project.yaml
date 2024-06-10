@@ -46,3 +46,11 @@ actions:
     outputs:
       highly_sensitive:
         cohort: output/input_incident.csv      
+
+# Rates and prevalence analysis     
+  generate_analysis_dataset_prevalent:
+    run: stata-mp:latest analysis/000_cr_define_covariates_hfref_prevalent.do
+    needs: [generate_study_population_prevalent_2018, generate_study_population_prevalent_2019, generate_study_population_prevalent_2020, generate_study_population_prevalent_2021, generate_study_population_prevalent_2022, generate_study_population_prevalent_2023]
+    outputs:
+      highly_sensitive:
+        cohort: output/prevalent_cohort*.dta      
