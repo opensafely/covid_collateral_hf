@@ -68,11 +68,11 @@ actions:
     needs: [generate_study_population_incident, generate_analysis_dataset_incident]
     outputs:
       moderately_sensitive:
-        output: output/incident_rates_summary*.dta 
+        output: output/incident_rates_summary*.csv 
 
   generate_recurrent_rates_incident:
     run: stata-mp:latest analysis/103_cr_rates_repeated_hosp_incident.do
     needs: [generate_study_population_incident, generate_analysis_dataset_incident]
     outputs:
       moderately_sensitive:
-        output: output/incident_rates_repeated*.dta      
+        output: output/incident_rates_repeated*.csv      
