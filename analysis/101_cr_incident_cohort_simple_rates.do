@@ -1,6 +1,6 @@
 ********************************************************************************
 *
-*	Do-file:		101_cr_simple_rates_prevalent.do
+*	Do-file:		101_cr_incident_simple_rates.do
 *
 *	Programmed by:	Emily Herrett (based on John & Alex)
 *
@@ -17,6 +17,8 @@
 *	Note:			
 ********************************************************************************
 do "`c(pwd)'/analysis/global.do"
+capture log close
+log using "$logdir/101_cr_incident_simple_rates.log", replace
 
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
@@ -24,16 +26,16 @@ foreach hftype in `heartfailtype' {
 use "$outdir/incident_cohort_`hftype'.dta", clear 
 
 	*list stratifiers
-		global stratifiers "agegroup male ethnicity imd region_9 previous_diabetes ckd cld year"
+		global stratifiers "agegroup male ethnicity imd region_9 previous_diabetes ckd year aa arni betablocker mra sglt2i two_pillars three_pillars four_pillars"
 		*efi_cat
 	*create a file to post results	
 		tempname measures
 		postfile `measures' str20(time) str25(outcome) str20(variable) category personTime numEvents rate lc uc using "$tabfigdir/incident_rates_summary_`hftype'", replace
 
 foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
-				cvd_mortality hf_mortality hyperkalaemia ///
+				cvd_mortality  hyperkalaemia ///
 				hyponatraemia dka_hosp aki fractures{
-
+				*hf_mortality
 	preserve	
 	local out  `v'
 	local d " "1yr" "5yr" "
@@ -48,8 +50,11 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 		* Overall rate 
 		stptime, per(1000)  
 		* Save measure
-		local events .
-		if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
+		local events . // create a local macro called events and set to missing
+		if `r(failures)' == 0 | `r(failures)' > 5 {
+		local events = `r(failures)' 
+		}
+		// if the number of failures is zero or more than 5, set the local macro to the number of events 
 		post `measures' ("`x'") ("`out'") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
@@ -60,18 +65,29 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 			di `cats'
 			foreach l of local cats {
 				noi di "$group: Calculate rate for variable `c' and level `l'" 
-				qui  count if `c' ==`l'
-				if `r(N)' > 0 {
-				stptime if `c'==`l'
+				count if `c' ==`l'
+				if `r(N)' > 0  {
+				capture stptime if `c'==`l'
 				* Save measures
 				local events .
-				if `r(failures)' == 0 | `r(failures)' > 5 local events `r(failures)'
-				post `measures' ("`x'") ("`out'") ("`c'") (`l') (`r(ptime)')	///
-								(`events') (`r(rate)') 							///
-								(`r(lb)') (`r(ub)')
+				local persontime .
+				local rate .
+				local lower .
+				local upper .
+				display `events' `persontime' `rate' `lower' `upper'
+				if (`r(failures)' == 0 | `r(failures)' > 5) {
+					local events =`r(failures)'
+					local persontime = `r(ptime)'
+					local rate = `r(rate)'
+					local lower = `r(lb)'
+					local upper = `r(ub)'				
+				}
+				post `measures' ("`x'") ("`out'") ("`c'") (`l') (`persontime')	///
+								(`events') (`rate') 							///
+								(`lower') (`upper')
 				}
 
-				else {
+				else { 					
 				post `measures' ("`x'") ("`out'") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
@@ -93,3 +109,4 @@ use "$tabfigdir/incident_rates_summary_`hftype'", replace
 export delimited using "$tabfigdir/incident_rates_summary_`hftype'.csv", replace
 erase "$tabfigdir/incident_rates_summary_`hftype'.dta"
 }
+log close

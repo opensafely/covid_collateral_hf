@@ -1,6 +1,6 @@
 ********************************************************************************
 *
-*	Do-file:		102_cr_simple_prevalences_prevalent.do
+*	Do-file:		102_cr_prevalent_cohort_prevalence.do
 *
 *	Programmed by:	Emily Herrett (based on John & Alex)
 *
@@ -17,6 +17,7 @@
 *	Note:			
 ********************************************************************************
 do "`c(pwd)'/analysis/global.do"
+log using "$logdir/102_cr_prevalent_cohort_prevalence.log", replace
 
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
@@ -32,12 +33,12 @@ foreach year in `years' {
 	use "$outdir/prevalent_cohort_`hftype'_`year'.dta", clear 
 	*use "$outdir/prevalent_cohort_hfref_2018.dta", clear 
 
-	global stratifiers "agegroup male ethnicity imd region_9 duration_hf_yrs previous_diabetes  ckd cld"
+	global stratifiers "agegroup male ethnicity imd region_9 duration_hf_yrs previous_diabetes  ckd"
 	*efi_cat
 	*tempfile for the postfile command
 	tempname measures
 *float(year)																	 	
-	postfile `measures' float(year)  str20(drug) str20(variable) float(category) float(total) float(ondrug) float(proportion) float(ll) float(ul) using "$tabfigdir/prevalences_summary_`hftype'_`year'", replace
+	postfile `measures' float(year)  str20(drug) str20(variable) float(category) float(total) float(ondrug) float(proportion) float(ll) float(ul) using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'", replace
 
 	*need to add contraindications to this loop
 	*need to add automatic redaction to this loop
@@ -105,11 +106,12 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 ********************************************************************************
 *2.  GRAPH AND TABULATE THE PROPORTION OF PATIENTS ON DRUGS BY COVARIATES
 ********************************************************************************
-	use "$tabfigdir/prevalences_summary_`hftype'_2018", clear
+	use "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018", clear
+	
 	local years 2019 2020 2021 2022 2023 
 
 	foreach year in `years' {
-	append using "$tabfigdir/prevalences_summary_`hftype'_`year'"
+	append using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'"
 	}
 
 	*TURN PROPORTIONS INTO PERCENTAGES
@@ -134,26 +136,6 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	***************************************************************************
 	*OVERALL PRESCRIPTION BY YEAR
 	***************************************************************************
-		*GRAPH
-		preserve	
-			keep if variable=="Overall"
-			twoway bar proportion year, by(drugpresc, ///
-			rows(2) ///
-			legend(off) ///
-			graphregion(color(white))) ///
-			xlabel(2018 2019 2020 2021 2022 2023, labsize(small) angle(45) notick) ///
-			ytitle(Percentage of patients treated (95% CI)) ///
-			yscale(range (0 100)) ///
-			ylabel(0(20)70) ///
-			xtitle("") ///
-			barwidth(0.8) ///
-			|| rcap ul ll year, 
-		graph save "$tabfigdir/prevalences_by_`hftype'_`year'.gph", replace	
-		restore	
-		
-		*TABLE
-		export delimited using "$tabfigdir/prevalences_summary_`hftype'_`year'.csv", replace
-
 	***************************************************************************
 	*GRAPHS BY COVARIATES
 	***************************************************************************
@@ -169,7 +151,6 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		replace variable="CKD" if variable=="ckd"
 		replace variable="CLD" if variable=="cld"
 		
-		order variable cat proportion
 		gen order=. 
 		replace order=1 if variable=="Overall"
 		replace order=2 if variable=="Age group"
@@ -185,10 +166,13 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		
 		replace cat="All" if variable=="Overall"
 		
-		replace cat="18-39" if variable=="Age group" & category==1
-		replace cat="40-59" if variable=="Age group" & category==2
-		replace cat="60-79" if variable=="Age group" & category==3
-		replace cat="80+" if variable=="Age group" & category==4
+		replace cat="18-29" if variable=="Age group" & category==1
+		replace cat="30-39" if variable=="Age group" & category==2
+		replace cat="40-49" if variable=="Age group" & category==3
+		replace cat="50-59" if variable=="Age group" & category==4
+		replace cat="60-69" if variable=="Age group" & category==5
+		replace cat="70-79" if variable=="Age group" & category==6
+		replace cat="80+" if variable=="Age group" & category==7
 		
 		replace cat="Female" if variable=="Sex" & category==0
 		replace cat="Male" if variable=="Sex" & category==1
@@ -225,11 +209,47 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		replace cat="Diabetes"  if variable=="Diabetes" & category==1						
 
 		replace cat="No CKD"  if variable=="CKD" & category==0						
-		replace cat="CKD"  if variable=="CKD" & category==1						
+		replace cat="CKD stage 3, eGFR 30-60"  if variable=="CKD" & category==1						
+		replace cat="CKD stage 4/5, eGFR <30"  if variable=="CKD" & category==2						
 
-		replace cat="No CLD"  if variable=="CLD" & category==0						
-		replace cat="CLD"  if variable=="CLD" & category==1						
-	
+		*replace cat="No CLD"  if variable=="CLD" & category==0						
+		*replace cat="CLD"  if variable=="CLD" & category==1						
+
+
+		***************************************************************************
+		*OVERALL PRESCRIPTION, BY CALENDAR YEAR
+		***************************************************************************
+		
+		preserve	
+			keep if variable=="Overall"
+			twoway bar proportion year, by(drugpresc, ///
+			rows(2) ///
+			legend(off) ///
+			graphregion(color(white))) ///
+			xlabel(2018 2019 2020 2021 2022 2023, labsize(small) angle(45) notick) ///
+			ytitle(Percentage of patients treated (95% CI)) ///
+			yscale(range (0 100)) ///
+			ylabel(0(20)70) ///
+			xtitle("") ///
+			barwidth(0.8) ///
+			|| rcap ul ll year, 
+		graph save "$tabfigdir/prevalent_prevalences_by_`hftype'.gph", replace	
+		restore	
+		
+		*TABLE
+		order year drugpresc variable cat category total ondrug proportion ll ul
+		export delimited using "$tabfigdir/prevalent_prevalences_summary_`hftype'.csv", replace
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2019.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2020.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2021.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2022.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2023.dta"
+
+		}			
+log close		
+
+	/*
 	*GRAPH
 	local years " "2018" "2019" "2020" "2021" "2022" "2023" "
 	foreach year in `years' {
@@ -248,21 +268,18 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 				graph bar proportion, ///
 				over(cat, sort(order) label(angle(45) labsize(vsmall))) ///
 				graphregion(color(white)) ///
-				ytitle(Percentage of patients treated (95% CI)) ///
+				ytitle(% patients treated with `drug' in `year' (95% CI)) ///
 				bargap(40) 
 				*need to add confidence intervals
-				graph save "$tabfigdir/prevalences_by_covar_`hftype'_`year'_`drug'.gph", replace	
+				graph save "$tabfigdir/prevalent_prevalences_by_covar_`hftype'_`year'_`drug'.gph", replace	
 	*TABLE
-	keep variable year proportion drug total ondrug ll ul drugpresc
-	export delimited using "$outdir/prevalences_covar_`hftype'_`year'_`drug'.csv", replace
+	*export delimited using "$tabfigdir/prevalences_covar_`hftype'_`year'_`drug'.csv", replace
 			
 			restore	
 				}
 				}
+*/
 
-
-}			
-			
 			
 	/*
 			///
@@ -354,7 +371,7 @@ foreach name in `vars' {
 	
 	gen ckd=.
 	replace ckd=category if variable=="CKD"
-	label define ynckd 0 "No CKD" 1 "CKD"
+	label define ynckd 0 "No CKD" 1 "CKD stage 3, eGFR 30-60" 2 "CKD stage 4/5, eGFR<30"
 	label values ckd ynckd 
 
 	gen cld=.
@@ -408,7 +425,8 @@ foreach name in `vars' {
 		replace cat="Diabetes"  if variable=="Diabetes" & category==1						
 
 		replace cat="No CKD"  if variable=="CKD" & category==0						
-		replace cat="CKD"  if variable=="CKD" & category==1						
+		replace cat="CKD stage 3, eGFR 30-60"  if variable=="CKD" & category==1						
+		replace cat="CKD stage 4/5, eGFR <30"  if variable=="CKD" & category==2						
 
 		replace cat="No CLD"  if variable=="CLD" & category==0						
 		replace cat="CLD"  if variable=="CLD" & category==1						

@@ -28,15 +28,18 @@ def generate_common_variables(index_date_variable):
         ageband_broad = patients.categorised_as(
             {   
                 "0": "DEFAULT",
-                "18-39": """ age >=  18 AND age < 40""",
-                "40-59": """ age >=  40 AND age < 60""",
-                "60-79": """ age >=  60 AND age < 80""",
+                "18-29": """ age >=  18 AND age < 30""",
+                "30-39": """ age >=  30 AND age < 40""",
+                "40-49": """ age >=  40 AND age < 50""",
+                "50-59": """ age >=  50 AND age < 60""",
+                "60-69": """ age >=  60 AND age < 70""",
+                "70-79": """ age >=  70 AND age < 80""",
                 "80+": """ age >=  80 AND age < 120""",
             },
             return_expectations={
                 "rate": "universal",
                 "category": {
-                    "ratios": {"18-39": 0.3, "40-59": 0.3, "60-79":0.2, "80+":0.2 }
+                    "ratios": {"18-29": 0.3, "40-49": 0.3, "60-69":0.2, "80+":0.2 }
                 }
             },
         ),
@@ -282,7 +285,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
            returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.6,
             }, 
         ),
 
@@ -292,7 +295,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.6,
             }, 
         ), 
 
@@ -302,7 +305,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.6,
             }, 
         ), 
 
@@ -312,7 +315,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.7,
             }, 
         ), 
 
@@ -322,7 +325,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.7,
             }, 
         ), 
 
@@ -332,7 +335,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.7,
             }, 
         ), 
 
@@ -342,7 +345,7 @@ def generate_common_variables(index_date_variable):
             between=[f"{index_date_variable} - 90 days", f"{index_date_variable} + 90 days"],
             returning="binary_flag",
             return_expectations={
-                "incidence": 0.1,
+                "incidence": 0.7,
             }, 
         ), 
 
@@ -400,7 +403,7 @@ def generate_common_variables(index_date_variable):
             "incidence": 0.1,}, 
             ),
  
-        fracture_icd_10=patients.admitted_to_hospital(
+        fracture_icd10=patients.admitted_to_hospital(
             with_these_diagnoses=fracture_icd_codes,
             returning="date_admitted",
             date_format="YYYY-MM-DD",
@@ -411,14 +414,33 @@ def generate_common_variables(index_date_variable):
             ),
 
         falls_or_fractures=patients.minimum_of(
-            "falls_primary_care", "falls_emerg", "fracture_icd_10"
+            "falls_emerg", "fracture_icd10"
         ),
-        n_fracture_icd_10=patients.admitted_to_hospital(
+        n_fracture_icd105yr=patients.admitted_to_hospital(
             with_these_diagnoses=fracture_icd_codes,
             returning="number_of_matches_in_period",
             between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
+        n_falls_emerg5yr=patients.attended_emergency_care(
+            with_these_diagnoses=falls_codes_snomed,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
+        n_fracture_icd101yr=patients.admitted_to_hospital(
+            with_these_diagnoses=fracture_icd_codes,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
+        n_falls_emerg1yr=patients.attended_emergency_care(
+            with_these_diagnoses=falls_codes_snomed,
+            returning="number_of_matches_in_period",
+            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
+        ), 
+
         # AMPUTATION - PRIMARY CARE AND OPCS CODES
         amputation_primary_care=patients.with_these_clinical_events(
             codelist=amputation_codes,    

@@ -30,7 +30,7 @@ study = StudyDefinition(
     # use the "patients.satisfying()" function to combine information from multiple different variables
     
     # define the study index date - this is mid year for prevalent cohorts
-    index_date="2020-07-01",    
+    index_date="2020-05-01",    
 
     # INCLUDE: age 18+ on date of study, male or female, registered with TPP at index date, with 3 months complete registration, a valid address and postcode
     # EXCLUDE:missing age, missing sex, missing region, missing IMD, 

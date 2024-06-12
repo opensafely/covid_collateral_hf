@@ -1,12 +1,12 @@
 ********************************************************************************
 *
-*	Do-file:		102_cr_simple_prevalences_prevalent.do
+*	Do-file:		102_cr_incident_cohort_prevalences.do
 *
 *	Programmed by:	Emily Herrett (based on John & Alex)
 *
-*	Data used:		"$outdir/prevalent_cohort_hfref_`year'.dta"
+*	Data used:		
 *
-*	Data created:   "$tabfigdir/prevalences_summary_`year'"
+*	Data created:   "$tabfigdir/incident_prevalences_summary_`year'"
 *
 *	Other output:	Graphs describing prevalence of drug use
 *
@@ -17,6 +17,7 @@
 *	Note:			
 ********************************************************************************
 do "`c(pwd)'/analysis/global.do"
+log using "$logdir/102_cr_incident_cohort_prevalences.log", replace
 
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
@@ -24,12 +25,10 @@ foreach hftype in `heartfailtype' {
 ********************************************************************************
 *1.  CREATE TABLE OF PROPORTIONS FOR EACH DRUG, EACH COVARIATE AND EACH YEAR
 ********************************************************************************
-
-
 	use "$outdir/incident_cohort_`hftype'.dta", clear 
 	*use "$outdir/incident_cohort_hfref.dta", clear 
 
-	global stratifiers "agegroup male ethnicity imd region_9  previous_diabetes  ckd cld"
+	global stratifiers "agegroup male ethnicity imd region_9  previous_diabetes  ckd"
 	*efi_cat
 
 	*calculate prevalence by year
@@ -61,7 +60,7 @@ foreach hftype in `heartfailtype' {
 			local ul = r(table)[6,2]
 			
 				if (`ondrug' == 0 | `ondrug' > 5) & (`total' == 0 | `total' >5) {
-				post `measures' (`year') ("`drug'") ("Overall") (`category') (`total') (`ondrug') (`proportion') (`ll') (`ul')
+				post `measures' (`year') ("`drug'") ("Overall") (0) (`total') (`ondrug') (`proportion') (`ll') (`ul')
 				}
 
 				else {
@@ -83,17 +82,17 @@ foreach hftype in `heartfailtype' {
 					proportion `drug' if `c'==`l'
 					// Loop through the results and post them to the temporary file
 					matrix list r(table)
-					local category = `l'
+					*local category = `l'
 					local proportion = r(table)[1, 2]
 					local ll = r(table)[5, 2]
 					local ul = r(table)[6, 2]
 					
 				if `ondrug' == 0 | `ondrug' > 5 {
-				post `measures' (`year') ("`drug'") ("`c'") (`category') (`total') (`ondrug') (`proportion') (`ll') (`ul')
+				post `measures' (`year') ("`drug'") ("`c'") (`l') (`total') (`ondrug') (`proportion') (`ll') (`ul')
 				}
 
 				else {
-				post `measures' (`year') ("`drug'") ("`c'") (`category') (`total') (.) (.) (.) (.)
+				post `measures' (`year') ("`drug'") ("`c'") (`l') (`total') (.) (.) (.) (.)
 					}
 					
 				}
@@ -136,6 +135,7 @@ foreach hftype in `heartfailtype' {
 	*OVERALL PRESCRIPTION, BY CALENDAR YEAR
 	***************************************************************************
 		*GRAPH
+		
 		preserve	
 			keep if variable=="Overall"
 			twoway bar proportion year, by(drugpresc, ///
@@ -154,7 +154,16 @@ foreach hftype in `heartfailtype' {
 		
 		*TABLE
 		export delimited using "$tabfigdir/incident_prevalences_summary_`hftype'.csv", replace
-
+		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2018.dta"
+		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2019.dta"
+		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2020.dta"
+		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2021.dta"
+		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2022.dta"
+		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2023.dta"
+}			
+			
+log close	
+		/*
 	***************************************************************************
 	*GRAPHS BY COVARIATES
 	***************************************************************************
@@ -171,7 +180,6 @@ foreach hftype in `heartfailtype' {
 		replace variable="CLD" if variable=="cld"
 		replace variable="Year" if variable=="year"
 		
-		order variable cat proportion
 		gen order=. 
 		replace order=1 if variable=="Overall"
 		replace order=2 if variable=="Age group"
@@ -187,10 +195,13 @@ foreach hftype in `heartfailtype' {
 		
 		replace cat="All" if variable=="Overall"
 		
-		replace cat="18-39" if variable=="Age group" & category==1
-		replace cat="40-59" if variable=="Age group" & category==2
-		replace cat="60-79" if variable=="Age group" & category==3
-		replace cat="80+" if variable=="Age group" & category==4
+		replace cat="18-29" if variable=="Age group" & category==1
+		replace cat="30-39" if variable=="Age group" & category==2
+		replace cat="40-49" if variable=="Age group" & category==3
+		replace cat="50-59" if variable=="Age group" & category==4
+		replace cat="60-69" if variable=="Age group" & category==5
+		replace cat="70-79" if variable=="Age group" & category==6
+		replace cat="80+" if variable=="Age group" & category==7
 		
 		replace cat="Female" if variable=="Sex" & category==0
 		replace cat="Male" if variable=="Sex" & category==1
@@ -227,11 +238,12 @@ foreach hftype in `heartfailtype' {
 		replace cat="Diabetes"  if variable=="Diabetes" & category==1						
 
 		replace cat="No CKD"  if variable=="CKD" & category==0						
-		replace cat="CKD"  if variable=="CKD" & category==1						
+		replace cat="CKD stage 3, eGFR 30-60"  if variable=="CKD" & category==1						
+		replace cat="CKD stage 4/5, eGFR <30"  if variable=="CKD" & category==2						
 
 		replace cat="No CLD"  if variable=="CLD" & category==0						
 		replace cat="CLD"  if variable=="CLD" & category==1						
-	
+	/*
 	*GRAPH
 	local years " "2018" "2019" "2020" "2021" "2022" "2023" "
 	foreach year in `years' {
@@ -249,23 +261,17 @@ foreach hftype in `heartfailtype' {
 				graph bar proportion, ///
 				over(cat, sort(order) label(angle(45) labsize(vsmall))) ///
 				graphregion(color(white)) ///
-				ytitle(Percentage of patients treated (95% CI)) ///
+				ytitle(% patients treated with `drug' in `year' (95% CI)) ///
 				bargap(40) 
 				*need to add confidence intervals
-				graph save "$tabfigdir/incident_prevalences_by_covar_`hftype'_`drug'.gph", replace	
+				graph save "$tabfigdir/incident_prevalences_by_covar_`hftype'_`drug'_`year'.gph", replace
+			
 	*TABLE
-	keep variable year proportion drug total ondrug ll ul drugpresc
-	export delimited using "$outdir/incident_prevalences_covar_`hftype'_`drug'.csv", replace
+	*export delimited using "$tabfigdir/incident_prevalences_covar_`hftype'_`drug'_`year'.csv", replace
 			
 			restore	
+			
 				}
 				}
+				*/
 
-
-}			
-			
-			
-		
-		
-		
-		

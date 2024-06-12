@@ -49,14 +49,14 @@ actions:
 
 # Generate datasets for analysis   000 and 001  
   generate_analysis_dataset_prevalent:
-    run: stata-mp:latest analysis/000_cr_define_covariates_hfref_prevalent.do
+    run: stata-mp:latest analysis/000_cr_define_covariates_prevalent.do
     needs: [generate_study_population_prevalent_2018, generate_study_population_prevalent_2019, generate_study_population_prevalent_2020, generate_study_population_prevalent_2021, generate_study_population_prevalent_2022, generate_study_population_prevalent_2023]
     outputs:
       highly_sensitive:
         cohort: output/prevalent_cohort*.dta   
 
   generate_analysis_dataset_incident:
-    run: stata-mp:latest analysis/001_cr_define_covariates_hfref_incident.do
+    run: stata-mp:latest analysis/001_cr_define_covariates_incident.do
     needs: [generate_study_population_incident]
     outputs:
       highly_sensitive:
@@ -64,30 +64,30 @@ actions:
 
 # Generate rates for incident cohorts 101 and 103
   generate_rates_incident:
-    run: stata-mp:latest analysis/101_cr_simple_rates_incident.do
+    run: stata-mp:latest analysis/101_cr_incident_cohort_simple_rates.do
     needs: [generate_study_population_incident, generate_analysis_dataset_incident]
     outputs:
       moderately_sensitive:
         output: output/tabfig/incident_rates_summary*.csv 
 
   generate_recurrent_rates_incident:
-    run: stata-mp:latest analysis/103_cr_rates_repeated_hosp_incident.do
+    run: stata-mp:latest analysis/103_cr_incident_cohort_rates_repeated.do
     needs: [generate_study_population_incident, generate_analysis_dataset_incident]
     outputs:
       moderately_sensitive:
         output: output/tabfig/incident_rates_repeated*.csv      
 
-# Generate rates for prevalent cohorts
+# Generate rates for prevalent cohorts 201 and 203
   generate_rates_prevalent:
-    run: stata-mp:latest analysis/201_cr_simple_rates_prevalent.do
+    run: stata-mp:latest analysis/201_cr_prevalent_cohort_simple_rates.do
     needs: [generate_analysis_dataset_prevalent]
     outputs:
       moderately_sensitive:
         output: output/tabfig/prevalent_rates_summary*.csv 
 
   generate_recurrent_rates_prevalent:
-    run: stata-mp:latest analysis/203_cr_rates_repeated_hosp_prevalent.do
+    run: stata-mp:latest analysis/203_cr_prevalent_cohort_rates_repeated.do
     needs: [generate_analysis_dataset_prevalent]
     outputs:
       moderately_sensitive:
-        output: output/tabfig/prevalent_rates_repeated*.csv      
+        output: output/tabfig/prevalent_rates_repeated*.csv  

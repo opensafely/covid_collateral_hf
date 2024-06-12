@@ -1,6 +1,6 @@
 ********************************************************************************
 *
-*	Do-file:		000_cr_define_covariates.do
+*	Do-file:		002_cr_covariates.do
 *
 *	Programmed by:	Emily Herrett (based on Alex & John (Based on Fizz & Krishnan))
 *
@@ -12,34 +12,19 @@
 *
 ********************************************************************************
 *
-*	Purpose:		
+*	Purpose:	defines common covariates for incident and prevalent cohorts
 *
 *	Note:			
 ********************************************************************************
-clear
-do "`c(pwd)'/analysis/global.do"
-
-
-import delimited "$outdir/input_incident.csv", clear
-
-	di "STARTING COUNT FROM IMPORT:"
-
-	count 
-
-* check that no HFpEF patients are included
-	drop if hfpef==1
-	count
-*run on all patients
-
-
+	*Rename variables that are too long	
 	rename patient_index_date patient_index 
-*Rename variables that are too long	
 
 ******************************
 *  Convert strings to dates  *
 ******************************
 * To be added: dates related to outcomes
-foreach var of varlist 	  date_deregistered	///
+foreach var of varlist 	  master_index ///
+						  date_deregistered	///
 						  patient_index ///
 						  first_hf_emerg ///
 						  first_hf_secondary ///
@@ -54,7 +39,7 @@ foreach var of varlist 	  date_deregistered	///
 						  falls_emerg ///
 						  all_hosp_fup	///
 						  all_cvd_fup	///
-						  fracture_icd_10 ///
+						  fracture_icd10 ///
 						  amputation_primary_care ///
 						  amputation_opcs4 ///
 						  admitted_hosp	///
@@ -84,19 +69,6 @@ capture confirm string variable `var'
 **********************
 *Recode covariates
 **********************
-/* NOT RELEVANT FOR INCIDENT CASES
-*Duration of heart failure
-	gen duration_hf=(index_date-patient_index_date)/365.25
-	replace duration_hf=. if duration_hf<0
-	gen duration_hf_yrs=.
-	replace duration_hf_yrs=0 if duration_hf<1
-	replace duration_hf_yrs=1 if duration_hf>=1 & duration_hf<2
-	replace duration_hf_yrs=2 if duration_hf>=2 & duration_hf<5
-	replace duration_hf_yrs=3 if duration_hf>=5 & duration_hf!=.
-	label define duration 0 "0-1 years" 1 "1-2 years" 2 "2-5 years" 3 ">5 years"
-	label values duration_hf_yrs duration 
-	tab duration_hf_yrs
-*/
 * Sex
 	assert inlist(sex, "M", "F")
 	gen male = (sex=="M")
@@ -183,12 +155,15 @@ capture confirm string variable `var'
 	assert age<.
 	assert ageband_broad!=""
 	gen agegroup=.
-	replace agegroup=1 if ageband_broad=="18-39"
-	replace agegroup=2 if ageband_broad=="40-59"
-	replace agegroup=3 if ageband_broad=="60-79"
-	replace agegroup=4 if ageband_broad=="80+"
+	replace agegroup=1 if ageband_broad=="18-29"
+	replace agegroup=2 if ageband_broad=="30-39"
+	replace agegroup=3 if ageband_broad=="40-49"
+	replace agegroup=4 if ageband_broad=="50-59"
+	replace agegroup=5 if ageband_broad=="60-69"
+	replace agegroup=6 if ageband_broad=="70-79"
+	replace agegroup=7 if ageband_broad=="80+"
 	
-	label define agegrp 1 "18-39" 2 "40-59" 3 "60-79" 4 "80+"
+	label define agegrp 1 "18-29" 2 "30-39" 3 "40-49" 4 "50-59" 5 "60-69" 6 "70-79" 7 "80+"
 	label values agegroup agegrp
 
 *eGFR  
@@ -232,7 +207,7 @@ capture confirm string variable `var'
 	recode ckd 0=1 2/3=2 4/5=3, gen(reduced_kidney_function_cat)
 	replace reduced_kidney_function_cat = 1 if creatinine==. 
 	label define reduced_kidney_function_catlab ///
-		1 "None" 2 "Stage 3a/3b egfr 30-60	" 3 "Stage 4/5 egfr<30"
+		1 "None" 2 "Stage 3a/3b egfr 30-60" 3 "Stage 4/5 egfr<30"
 	label values reduced_kidney_function_cat reduced_kidney_function_catlab 
 	replace reduced_kidney_function_cat=3 if ckd_stage45==1
 	replace reduced_kidney_function_cat=2 if ckd_stage35==1 & ckd_stage45!=1
@@ -245,6 +220,7 @@ capture confirm string variable `var'
 	*label values reduced_kidney_function_cat2 reduced_kidney_function_cat2lab 
 	drop SCr_adj min max egfr egfr_cat ckd 
 	rename reduced_kidney_function_cat ckd 
+	label variable ckd ""
 *Diabetes
 	tab previous_diabetes
 	
@@ -319,7 +295,7 @@ capture confirm string variable `var'
 	* cvd_mortality_date 
 	* hf_mortality_date 
 
-*Other outcomes	
+	*Other outcomes	
 	*HYPERKALAEMIA AND HYPONATRAEMIA
 		*hyperkalaemia_date -  
 		*hyponatraemia_date -  
@@ -330,34 +306,57 @@ capture confirm string variable `var'
 		*aki_date  
 
 	*FALLS AND FRACTURES
-		*fractures in secondary care, and falls in primary care ()excluding those with a recent history of falls in primary care?? - person who has had a fall more likely to have another fall - so excluding history of falls might introduce bias?  Therefore main outcome will be secondary care fractures - sens analysis including falls in primary care)
+		*fractures in secondary care, falls in emergency care, and falls in primary care ()excluding those with a recent history of falls in primary care?? - person who has had a fall more likely to have another fall - so excluding history of falls might introduce bias?  Therefore main outcome will be secondary care fractures and emergency care falls - sens analysis including falls in primary care??)
 		*falls_primary_care_date 
 		*falls_emerg_date 
-		*fracture_icd_10_date
-		gen fractures_date=min(falls_emerg_date, fracture_icd_10_date)
+		*fracture_icd10_date
+		gen fractures_date=min(falls_emerg_date, fracture_icd10_date)
 		gen fractures=0
 		replace fractures=1 if fractures_date!=.
 
-	rename date_deregistered_date deregistered_date
-	display d(31December2023)
-	local end_date=23375
-	
-*Define end date - end of study (five years after diagnosis), end of registration, death, end f-up
-	gen end5yr=patient_index_date+(365.25*5)
-	gen enddate5yr=min(allcause_mortality_date, deregistered_date, end5yr, `end_date')
-	
-*Define end dates when looking at outcomes in the first and second years after index date
-	gen end1yr=patient_index_date+365.25
-	gen end2yr=patient_index_date+365.25+365.25
-	gen enddate1yr=min(allcause_mortality_date, deregistered_date, end1yr, `end_date')
-	gen enddate2yr=min(allcause_mortality_date, deregistered_date, end2yr, `end_date')
-	format enddate5yr enddate1yr enddate2yr %td
-	
-*Define outcomes and end dates for rates at 0-1 years, 1-2 years, and 0-5 years	
+		
+********************
+*END DATES**
+********************		
+	*Define last collection date - based on TPP reports online for primary care, APC, Emergency care and ONS mortality
+		display d(01may2024)
+		local lcd=23497
+
+	*generate end date overall - minimum of all cause death, deregistration, and 1st May 2024
+		rename date_deregistered_date deregistered_date
+		gen enddate=min(allcause_mortality_date, deregistered_date, `lcd')
+		format enddate %td
+
+	*Define end dates for outcome variables where follow-up ends at failure
+			foreach out in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
+						cvd_mortality hf_mortality hyperkalaemia ///
+						hyponatraemia dka_hosp aki fractures{
+
+			*replace outcome and outcome date as missing if it occurs after the enddate
+			replace `out'_date=. if `out'_date>enddate
+			replace `out'=0 if `out'_date>enddate
+
+			*generate a variable to show the end date including the date of the outcome 
+			gen `out'_enddate = min(`out'_date, enddate)
+			replace `out'_enddate= `out'_enddate + 1
+			format `out'_enddate %td
+			}
+			
+	*Define end dates when looking at outcomes in the first and second years after index date
+		gen end1yr=master_index_date+365.25
+		gen end2yr=master_index_date+365.25+365.25
+		gen end5yr=master_index_date+(365.25*5)
+		
+		gen enddate1yr=min(enddate, end1yr)
+		gen enddate2yr=min(enddate, end2yr)
+		gen enddate5yr=min(enddate, end5yr)
+		format enddate5yr enddate1yr enddate2yr %td
+
+	*Define outcomes and end dates for rates at 0-1 years, 1-2 years, and 0-5 years - have not done 1-2 yet
 	local d " "1yr"  "5yr" "
 	*"2yr"
 	foreach x in `d' {
-*Define end dates for outcome variables
+	*Define end dates for outcome variables
 	foreach out in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 				cvd_mortality hf_mortality hyperkalaemia ///
 				hyponatraemia dka_hosp aki fractures{
@@ -374,22 +373,52 @@ capture confirm string variable `var'
 	format `out'_enddate`x' %td  // this is the end date for stset in simple rates calculation
 	}
 	}
+						
+				
+*label variables 
+	label variable agegroup "Age group"
+	label variable male "Sex"
+	label variable region_9 "Region"
+	label variable imd "IMD quintile"
+	label variable previous_diabetes "Diabetes"
+	label variable ckd "CKD, coded and eGFR"
+	label variable cld "Chronic liver disease"
+	label variable af "Atrial fibrillation"
+	label variable hypertension "Hypertension"
+	label variable copd "COPD"
+	label variable arb_contraindications "ARB contraindication"
+	label variable acei_contraindications "ACEi contraindication"
+	label variable bb_contraindications "Betablocker contraindication"
+	label variable mra_contraindications "MRA contraindication"
+	label variable aa "ACEi/ARB*"
+	label variable arni "ARNi*"
+	label variable mra "MRA*"
+	label variable sglt2i "SGLT2 inhibitor*"
+	label variable two_pillars "Two pillars of treatment*"
+	label variable three_pillars "Three pillars of treatment*"
+	label variable four_pillars "Four pillars of treatment*"
+	label variable n_outhf_emerg1yr "N HF emergency attendances 1 year"
+	label variable n_outhf_secondary1yr "N HF admissions 1 year"
+	label variable n_emerg_hosp1yr "N emergency attendances 1 year"
+	label variable n_admitted_hosp1yr "N hospital admissions 1 year"
+	label variable n_cvd_admissions1yr "N CVD admissions 1 year"
+	label variable n_dka_hosps1yr "N DKA admissions 1 year"
+	label variable n_fracture_icd101yr "N falls 1 year"
+	label variable n_falls_emerg1yr "N falls 1 year"
+	label variable n_falls_emerg5yr "N falls 5 years"
+	label variable n_dka_hosps1yr "N DKA admissions 1 year"
+	label variable allcause_mortality1yr "One year all-cause mortality"
+	label variable cvd_mortality1yr "One year CVD mortality"
+	label variable hf_mortality1yr "One year heart failure mortality"
+	label variable hyperkalaemia1yr "One year hyperkalaemia"
+	label variable hyponatraemia1yr "One year hyponatraemia"
+	label variable dka_hosp1yr "One year DKA"
+	label variable aki1yr "One year acute kidney injury"
+	label variable fractures1yr "One year fractures"
+	label variable all_hosp_fup1yr "One year all cause hospitalisation"
+	label variable outhf_hosp1yr  "One year heart failure hospitalisation"
+	label variable all_cvd_fup1yr "One year CVD hospitalisation"
 
-*/
 
-gen year=year(patient_index_date)
-tab year
 
-*keep patients whose incident heart failure was on or after 2018
-drop if year<2018
-
-*keep HFrEF patients identified in primary care AND unknown patients identified in primary care but with two pillars
-	keep if hfref==1 | (  first_hf_primary!=. & two_pillars==1)
-	count
-save "$outdir/incident_cohort_hf.dta", replace 
-
-*keep HFrEF patients identified in primary care 
-	keep if hfref==1
-	count 
-save "$outdir/incident_cohort_hfref.dta", replace 
 
