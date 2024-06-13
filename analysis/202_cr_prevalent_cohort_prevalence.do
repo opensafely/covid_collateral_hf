@@ -106,10 +106,10 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 ********************************************************************************
 *2.  GRAPH AND TABULATE THE PROPORTION OF PATIENTS ON DRUGS BY COVARIATES
 ********************************************************************************
-	use "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018", clear
+	use "$tabfigdir/prevalent_prevalences_summary_`hftype'_2022", clear
 	
-	local years  2022 2023 
-*2019 2020 2021
+	local years 2023 
+*2019 2020 2021 2022
 	foreach year in `years' {
 	append using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'"
 	}
