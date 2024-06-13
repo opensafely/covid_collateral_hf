@@ -32,7 +32,8 @@ foreach hftype in `heartfailtype' {
 	*efi_cat
 
 	*calculate prevalence by year
-	local years " "2018" "2019" "2020" "2021" "2022" "2023" "
+	local years "  "2022" "2023" "
+	*"2018" "2019" "2020" "2021"
 	foreach year in `years' {
 		preserve
 		keep if year==`year'
@@ -106,8 +107,9 @@ foreach hftype in `heartfailtype' {
 ********************************************************************************
 *2.  GRAPH AND TABULATE THE PROPORTION OF PATIENTS ON DRUGS BY COVARIATES
 ********************************************************************************
-	use "$tabfigdir/incident_prevalences_summary_`hftype'_2018", clear
-	local years " "2019" "2020" "2021" "2022" "2023" "
+	use "$tabfigdir/incident_prevalences_summary_`hftype'_2022", clear
+	local years "  "2023" "
+	*"2019" "2020" "2021" "2022"
 	foreach year in `years' {
 	append using "$tabfigdir/incident_prevalences_summary_`hftype'_`year'"
 	}
@@ -142,7 +144,7 @@ foreach hftype in `heartfailtype' {
 			rows(2) ///
 			legend(off) ///
 			graphregion(color(white))) ///
-			xlabel(2018 2019 2020 2021 2022 2023, labsize(small) angle(45) notick) ///
+			xlabel( 2022 2023, labsize(small) angle(45) notick) ///
 			ytitle(Percentage of patients treated (95% CI)) ///
 			yscale(range (0 100)) ///
 			ylabel(0(20)70) ///
@@ -151,13 +153,13 @@ foreach hftype in `heartfailtype' {
 			|| rcap ul ll year, 
 		graph save "$tabfigdir/incident_prevalences_by_`hftype'.gph", replace	
 		restore	
-		
+		*2018 2019 2020 2021
 		*TABLE
 		export delimited using "$tabfigdir/incident_prevalences_summary_`hftype'.csv", replace
-		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2018.dta"
-		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2019.dta"
-		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2020.dta"
-		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2021.dta"
+		*erase "$tabfigdir/incident_prevalences_summary_`hftype'_2018.dta"
+		*erase "$tabfigdir/incident_prevalences_summary_`hftype'_2019.dta"
+		*erase "$tabfigdir/incident_prevalences_summary_`hftype'_2020.dta"
+		*erase "$tabfigdir/incident_prevalences_summary_`hftype'_2021.dta"
 		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2022.dta"
 		erase "$tabfigdir/incident_prevalences_summary_`hftype'_2023.dta"
 }			

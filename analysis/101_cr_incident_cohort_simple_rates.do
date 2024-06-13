@@ -23,30 +23,38 @@ log using "$logdir/101_cr_incident_simple_rates.log", replace
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
 
+local years " "2022" "2023" "
+foreach year in `years' {
 use "$outdir/incident_cohort_`hftype'.dta", clear 
+keep if year==`year'
 
 	*list stratifiers
-		global stratifiers "agegroup male ethnicity imd region_9 previous_diabetes ckd year aa arni betablocker mra sglt2i two_pillars three_pillars four_pillars"
+		global stratifiers "agegroup male ethnicity imd region_9 previous_diabetes ckd aa arni betablocker mra sglt2i two_pillars three_pillars four_pillars"
 		*efi_cat
 	*create a file to post results	
 		tempname measures
-		postfile `measures' str20(time) str25(outcome) str20(variable) category personTime numEvents rate lc uc using "$tabfigdir/incident_rates_summary_`hftype'", replace
+		display "make postfile"
+		postfile `measures' float(year) str20(time) str25(outcome) str20(variable) category personTime numEvents rate lc uc using "$tabfigdir/incident_rates_summary_`hftype'_`year'", replace
 
 foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 				cvd_mortality  hyperkalaemia ///
 				hyponatraemia dka_hosp aki fractures{
 				*hf_mortality
+	display "preserve data"			
 	preserve	
 	local out  `v'
 	local d " "1yr" "5yr" "
 	foreach x in `d' {
+		display "set end date for outcome"
 		local enddatenow= "`v'_enddate`x'"
 		local start1yr=patient_index_date
 		*local start2yr=patient_index_date+365.25
 		local start5yr=patient_index_date
-	
-		stset `enddatenow', id(patient_id) failure(`out'`x') enter(`start`x'')  origin(`start`x'') scale(365.25)
 		
+		display "stset the data"
+		stset `enddatenow', id(patient_id) failure(`out'`x') enter(patient_index_date)  scale(365.25)
+		
+		display "calculate rate"
 		* Overall rate 
 		stptime, per(1000)  
 		* Save measure
@@ -54,8 +62,8 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 		if `r(failures)' == 0 | `r(failures)' > 5 {
 		local events = `r(failures)' 
 		}
-		// if the number of failures is zero or more than 5, set the local macro to the number of events 
-		post `measures' ("`x'") ("`out'") ("Overall") (0) (`r(ptime)') 	///
+		* if the number of failures is zero or more than 5, set the local macro to the number of events 
+		post `measures' (`year') ("`x'") ("`out'") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
 		
@@ -65,9 +73,9 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 			di `cats'
 			foreach l of local cats {
 				noi di "$group: Calculate rate for variable `c' and level `l'" 
-				count if `c' ==`l'
+				count if `c'==`l' & _d==1 
 				if `r(N)' > 0  {
-				capture stptime if `c'==`l'
+				stptime if `c'==`l'
 				* Save measures
 				local events .
 				local persontime .
@@ -82,13 +90,13 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 					local lower = `r(lb)'
 					local upper = `r(ub)'				
 				}
-				post `measures' ("`x'") ("`out'") ("`c'") (`l') (`persontime')	///
+				post `measures' (`year') ("`x'") ("`out'") ("`c'") (`l') (`persontime')	///
 								(`events') (`rate') 							///
 								(`lower') (`upper')
 				}
 
 				else { 					
-				post `measures' ("`x'") ("`out'") ("`c'") (`l') (.) 	///
+				post `measures' (`year') ("`x'") ("`out'") ("`c'") (`l') (.) 	///
 							(.) (.) 								///
 							(.) (.) 
 				}
@@ -100,13 +108,17 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 restore  
 		
 }
-
+}
 postclose `measures'
 
-* Change postfiles to csv
-use "$tabfigdir/incident_rates_summary_`hftype'", replace
 
-export delimited using "$tabfigdir/incident_rates_summary_`hftype'.csv", replace
-erase "$tabfigdir/incident_rates_summary_`hftype'.dta"
+local years " "2022" "2023" "
+foreach year in `years' {
+* Change postfiles to csv
+use "$tabfigdir/incident_rates_summary_`hftype'_`year'", replace
+export delimited using "$tabfigdir/incident_rates_summary_`hftype'_`year'.csv", replace
+erase "$tabfigdir/incident_rates_summary_`hftype'_`year'.dta"
 }
+}
+
 log close

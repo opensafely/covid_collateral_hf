@@ -26,15 +26,15 @@ foreach hftype in `heartfailtype' {
 *1.  CREATE TABLE OF PROPORTIONS FOR EACH DRUG, EACH COVARIATE AND EACH YEAR
 ********************************************************************************
 
-local years " "2018" "2019" "2020" "2021" "2022" "2023" "
-
+local years "  "2022" "2023" "
+*"2018" "2019" "2020" "2021"
 foreach year in `years' {
 
 	use "$outdir/prevalent_cohort_`hftype'_`year'.dta", clear 
 	*use "$outdir/prevalent_cohort_hfref_2018.dta", clear 
 
-	global stratifiers "agegroup male ethnicity imd region_9 duration_hf_yrs previous_diabetes  ckd"
-	*efi_cat
+	global stratifiers "agegroup male ethnicity imd duration_hf_yrs previous_diabetes ckd"
+	*efi_cat region_9
 	*tempfile for the postfile command
 	tempname measures
 *float(year)																	 	
@@ -108,8 +108,8 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 ********************************************************************************
 	use "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018", clear
 	
-	local years 2019 2020 2021 2022 2023 
-
+	local years  2022 2023 
+*2019 2020 2021
 	foreach year in `years' {
 	append using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'"
 	}
@@ -226,7 +226,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 			rows(2) ///
 			legend(off) ///
 			graphregion(color(white))) ///
-			xlabel(2018 2019 2020 2021 2022 2023, labsize(small) angle(45) notick) ///
+			xlabel( 2022 2023, labsize(small) angle(45) notick) ///
 			ytitle(Percentage of patients treated (95% CI)) ///
 			yscale(range (0 100)) ///
 			ylabel(0(20)70) ///
@@ -235,14 +235,14 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 			|| rcap ul ll year, 
 		graph save "$tabfigdir/prevalent_prevalences_by_`hftype'.gph", replace	
 		restore	
-		
+		*2018 2019 2020 2021
 		*TABLE
 		order year drugpresc variable cat category total ondrug proportion ll ul
 		export delimited using "$tabfigdir/prevalent_prevalences_summary_`hftype'.csv", replace
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2019.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2020.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2021.dta"
+		*erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018.dta"
+		*erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2019.dta"
+		*erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2020.dta"
+		*erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2021.dta"
 		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2022.dta"
 		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2023.dta"
 
