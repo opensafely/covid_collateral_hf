@@ -62,15 +62,7 @@ actions:
       highly_sensitive:
         cohort: output/incident_cohort*.dta     
 
-# Generate drug prevalence estimates for incident and prevalent cohorts 102 & 202
-  generate_drugprevalence_incident:
-    run: stata-mp:latest analysis/102_cr_incident_cohort_prevalence.do
-    needs: [generate_analysis_dataset_incident]
-    outputs:
-      moderately_sensitive:
-        output: output/tabfig/incident_prevalences_summary*.csv 
-        # graph: output/tabfig/incident_prevalences*.svg
-
+# Generate drug prevalence estimates for prevalent cohorts 202
   generate_drugprevalence_prevalent:
     run: stata-mp:latest analysis/202_cr_prevalent_cohort_prevalence.do
     needs: [generate_analysis_dataset_prevalent]
@@ -78,3 +70,13 @@ actions:
       moderately_sensitive:
         output: output/tabfig/prevalent_prevalences_summary*.csv 
         # graph: output/tabfig/prevalent_prevalences*.svg
+
+# Generate rates for prevalent cohorts: 201 
+  generate_rates_prevalent:
+    run: stata-mp:latest analysis/201_cr_prevalent_cohort_simple_rates.do
+    needs: [generate_analysis_dataset_prevalent]
+    outputs:
+      moderately_sensitive:
+        output: output/tabfig/prevalent_rates_summary*.csv 
+
+

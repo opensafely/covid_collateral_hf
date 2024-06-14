@@ -23,8 +23,8 @@ log using "$logdir/201_cr_prevalent_simple_rates.log", replace
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
 
-local years " "2018" "2019" "2020" "2021" "2022" "2023" "
-
+local years " "2022" "2023" "
+*"2018" "2019" "2020" "2021" 
 foreach year in `years' {
 use "$outdir/prevalent_cohort_`hftype'_`year'.dta", clear 
 
@@ -54,7 +54,7 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 		stptime, per(1000)  
 		* Save measure
 		local events .
-		if `r(failures)' == 0 | `r(failures)' > 5 {
+		if `r(failures)' == 0 | `r(failures)' > 7 {
 			local events = `r(failures)'
 			}
 		post `measures' (`year') ("`x'") ("`out'") ("Overall") (0) (`r(ptime)') 	///
@@ -69,7 +69,7 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 				noi di "$group: Calculate rate for variable `c' and level `l'" 
 				count if `c' ==`l'
 				if `r(N)' > 0 {
-				stptime if `c'==`l'
+				stptime  if `c'==`l', per(1000)
 				* Save measures
 					local events .
 					local persontime .
@@ -77,7 +77,7 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 					local lower .
 					local upper .
 					display `events' `persontime' `rate' `lower' `upper'
-				if (`r(failures)' == 0 | `r(failures)' > 5) {
+				if (`r(failures)' == 0 | `r(failures)' > 7) {
 					local events =`r(failures)'
 					local persontime = `r(ptime)'
 					local rate = `r(rate)'
@@ -110,15 +110,26 @@ postclose `measures'
 export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.csv", replace
 *erase "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.dta"
 }
+
 * Change postfiles to csv
-use "$tabfigdir/prevalent_rates_summary_`hftype'_2018", clear
-		local years " "2019" "2020" "2021" "2022" "2023" "
+use "$tabfigdir/prevalent_rates_summary_`hftype'_2022", clear
+		local years " "2023" "
+		* "2019" "2020" "2021" "2022"
 		foreach year in `years' {
 			append using "$tabfigdir/prevalent_rates_summary_`hftype'_`year'"
 			}
+	** Redact and round rates
+	foreach var of varlist numEvents personTime  {
+	gen `var'_midpoint = (ceil(`var'/6)*6) - (floor(6/2) * (`var'!=0))
+	}
+	gen rate_midpoint = (numEvents_midpoint/personTime_midpoint)*1000
+	gen lci_midpoint = (invpoisson(numEvents_midpoint,.975)/personTime_midpoint)*1000
+	gen uci_midpoint = (invpoisson(numEvents_midpoint,.025)/personTime_midpoint)*1000
+	drop personTime numEvents rate lc uc 			
 		export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'.csv", replace
 
-		local years " "2018" "2019" "2020" "2021" "2022" "2023" "
+		local years "  "2022" "2023" "
+*"2018" "2019" "2020" "2021"		
 		foreach year in `years' {
 			capture erase "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.dta"
 			capture erase "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.csv"
@@ -127,3 +138,8 @@ use "$tabfigdir/prevalent_rates_summary_`hftype'_2018", clear
 }
 
 log close
+
+
+
+
+
