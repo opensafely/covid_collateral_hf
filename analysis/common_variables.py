@@ -210,7 +210,7 @@ def generate_common_variables(index_date_variable):
         # HEART FAILURE OUTCOMES
         # HF HOSPITALISATION - EMERGENCY AND NON EMERGENCY
         outhf_emerg=patients.attended_emergency_care(
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             with_these_diagnoses=hf_emerg_codes,
             returning="date_arrived",
             date_format="YYYY-MM-DD",
@@ -221,7 +221,7 @@ def generate_common_variables(index_date_variable):
         ), 
         outhf_secondary=patients.admitted_to_hospital(
             with_these_primary_diagnoses=heart_failure_icd_codes,
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
@@ -235,7 +235,7 @@ def generate_common_variables(index_date_variable):
 
         # N HF HOSPITALISATIONS - EMERGENCY AND NON EMERGENCY
         n_outhf_emerg5yr=patients.attended_emergency_care(
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             with_these_diagnoses=hf_emerg_codes,
             returning="number_of_matches_in_period",
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
@@ -243,21 +243,21 @@ def generate_common_variables(index_date_variable):
 
         n_outhf_secondary5yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=heart_failure_icd_codes,
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             returning="number_of_matches_in_period",
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
 
         # N HF HOSPITALISATIONS ONE YEAR - EMERGENCY AND NON EMERGENCY
         n_outhf_emerg1yr=patients.attended_emergency_care(
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             with_these_diagnoses=hf_emerg_codes,
             returning="number_of_matches_in_period",
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
         n_outhf_secondary1yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=heart_failure_icd_codes,
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             returning="number_of_matches_in_period",
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
@@ -357,7 +357,7 @@ def generate_common_variables(index_date_variable):
 
     ## MORTALITY OUTCOMES
     allcause_mortality=patients.died_from_any_cause(
-        on_or_after=f"{index_date_variable}",
+        on_or_after=f"{index_date_variable} + 1 day",
         returning="date_of_death",
         date_format="YYYY-MM-DD",
             return_expectations={
@@ -366,7 +366,7 @@ def generate_common_variables(index_date_variable):
 
     cvd_mortality=patients.with_these_codes_on_death_certificate(
         cvd_icd_codes,
-        on_or_after=f"{index_date_variable}",
+        on_or_after=f"{index_date_variable} + 1 day",
         match_only_underlying_cause=True,
         returning="date_of_death",
         date_format="YYYY-MM-DD",
@@ -376,7 +376,7 @@ def generate_common_variables(index_date_variable):
 
     hf_mortality=patients.with_these_codes_on_death_certificate(
         heart_failure_icd_codes,
-        on_or_after=f"{index_date_variable}",
+        on_or_after=f"{index_date_variable} + 1 day",
         match_only_underlying_cause=True,
         returning="date_of_death",
         date_format="YYYY-MM-DD",
@@ -387,7 +387,7 @@ def generate_common_variables(index_date_variable):
     # FALLS AND FRACTURES - PRIMARY CARE, EMERGENCY CARE, HOSPITAL ADMISSION
         falls_primary_care=patients.with_these_clinical_events(
             codelist=falls_codes,    
-        	on_or_after=f"{index_date_variable}",
+        	on_or_after=f"{index_date_variable} + 1 day",
             returning="date",
             date_format="YYYY-MM-DD",
             return_expectations={
@@ -395,7 +395,7 @@ def generate_common_variables(index_date_variable):
             ), 
 
         falls_emerg=patients.attended_emergency_care(
-     		on_or_after=f"{index_date_variable}",
+     		on_or_after=f"{index_date_variable} + 1 day",
             with_these_diagnoses=falls_codes_snomed,
             returning="date_arrived",
             date_format="YYYY-MM-DD",
@@ -407,7 +407,7 @@ def generate_common_variables(index_date_variable):
             with_these_diagnoses=fracture_icd_codes,
             returning="date_admitted",
             date_format="YYYY-MM-DD",
-     		on_or_after=f"{index_date_variable}",
+     		on_or_after=f"{index_date_variable} + 1 day",
             find_first_match_in_period=True,
             return_expectations={
             "incidence": 0.1,}, 
@@ -419,32 +419,32 @@ def generate_common_variables(index_date_variable):
         n_fracture_icd105yr=patients.admitted_to_hospital(
             with_these_diagnoses=fracture_icd_codes,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
         n_falls_emerg5yr=patients.attended_emergency_care(
             with_these_diagnoses=falls_codes_snomed,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
         n_fracture_icd101yr=patients.admitted_to_hospital(
             with_these_diagnoses=fracture_icd_codes,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
         n_falls_emerg1yr=patients.attended_emergency_care(
             with_these_diagnoses=falls_codes_snomed,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ), 
 
         # AMPUTATION - PRIMARY CARE AND OPCS CODES
         amputation_primary_care=patients.with_these_clinical_events(
             codelist=amputation_codes,    
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
@@ -455,7 +455,7 @@ def generate_common_variables(index_date_variable):
             with_these_procedures=amputation_opcs_4_codes,
             returning="date_admitted",
             date_format="YYYY-MM-DD",
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             find_first_match_in_period=True,
             return_expectations={
             "incidence": 0.1,}, 
@@ -467,7 +467,7 @@ def generate_common_variables(index_date_variable):
 
     # ALL HOSPITALISATION - EMERGENCY AND NON EMERGENCY
         emerg_hosp=patients.attended_emergency_care(
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_arrived",
              date_format="YYYY-MM-DD",
            find_first_match_in_period=True,
@@ -476,12 +476,12 @@ def generate_common_variables(index_date_variable):
             ),
         n_emerg_hosp5yr=patients.attended_emergency_care(
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
         n_emerg_hosp1yr=patients.attended_emergency_care(
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
         n_emerg_hosp2yr=patients.attended_emergency_care(
@@ -490,7 +490,7 @@ def generate_common_variables(index_date_variable):
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
         admitted_hosp=patients.admitted_to_hospital(
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
@@ -499,12 +499,12 @@ def generate_common_variables(index_date_variable):
             ),
         n_admitted_hosp5yr=patients.admitted_to_hospital(
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
         n_admitted_hosp1yr=patients.admitted_to_hospital(
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
         ),
         n_admitted_hosp2yr=patients.admitted_to_hospital(
@@ -520,7 +520,7 @@ def generate_common_variables(index_date_variable):
 
 # CVD HOSPITALISATION - EMERGENCY AND NON EMERGENCY
         mace_emerg=patients.attended_emergency_care(
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             with_these_diagnoses=mace_emerg_codes,
             returning="date_arrived",
              date_format="YYYY-MM-DD",
@@ -531,7 +531,7 @@ def generate_common_variables(index_date_variable):
 
         cvd_primary_admission=patients.admitted_to_hospital(
             with_these_primary_diagnoses=cvd_icd_codes,
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
@@ -545,13 +545,13 @@ def generate_common_variables(index_date_variable):
         n_cvd_admissions5yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=cvd_icd_codes,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
             ),
         n_cvd_admissions1yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=cvd_icd_codes,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
             ),
         n_cvd_admissions2yr=patients.admitted_to_hospital(
@@ -564,7 +564,7 @@ def generate_common_variables(index_date_variable):
     # HYPERKALAEMIA AND HYPONATRAEMIA
         hyperkalaemia=patients.admitted_to_hospital(
             with_these_diagnoses=hyperkal_codes,    
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
@@ -573,7 +573,7 @@ def generate_common_variables(index_date_variable):
 
         hyponatraemia=patients.admitted_to_hospital(
             with_these_diagnoses=hyponat_codes,    
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             date_format="YYYY-MM-DD",
             find_first_match_in_period=True,
@@ -592,7 +592,7 @@ def generate_common_variables(index_date_variable):
     # DIABETIC KETOACIDOSIS
         dka_hosp=patients.admitted_to_hospital(
             with_these_primary_diagnoses=dm_keto_icd_codes,
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
@@ -601,13 +601,13 @@ def generate_common_variables(index_date_variable):
         n_dka_hosps5yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=dm_keto_icd_codes,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 5 years"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 5 years"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
             ),
         n_dka_hosps1yr=patients.admitted_to_hospital(
             with_these_primary_diagnoses=dm_keto_icd_codes,
             returning="number_of_matches_in_period",
-            between=[f"{index_date_variable}", f"{index_date_variable} + 1 year"],
+            between=[f"{index_date_variable} + 1 day", f"{index_date_variable} + 1 year"],
             return_expectations={"int": {"distribution": "normal", "mean": 2, "stddev": 1}},
             ),
         n_dka_hosps2yr=patients.admitted_to_hospital(
@@ -620,7 +620,7 @@ def generate_common_variables(index_date_variable):
     # ACUTE KIDNEY INJURY
         aki=patients.admitted_to_hospital(
             with_these_primary_diagnoses=aki_icd_codes,
-            on_or_after=f"{index_date_variable}",
+            on_or_after=f"{index_date_variable} + 1 day",
             returning="date_admitted",
             find_first_match_in_period=True,
             date_format="YYYY-MM-DD",
