@@ -117,16 +117,6 @@ capture confirm string variable `var'
 * Region
 	tab region
 	rename region region_string
-	assert inlist(region_string, 								///
-						"East Midlands", 						///
-						"East of England",  					///
-						"London", 								///
-						"North East", 							///
-						"North West", 							///
-						"South East", 							///
-						"South West",							///
-						"West Midlands", 						///
-						"Yorkshire and the Humber") 
 	gen     region_9 = 1 if region_string=="East Midlands"
 	replace region_9 = 2 if region_string=="East of England"
 	replace region_9 = 3 if region_string=="London"
@@ -338,7 +328,6 @@ capture confirm string variable `var'
 
 			*generate a variable to show the end date including the date of the outcome 
 			gen `out'_enddate = min(`out'_date, enddate)
-			replace `out'_enddate= `out'_enddate + 1
 			format `out'_enddate %td
 			}
 			
