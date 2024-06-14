@@ -43,7 +43,7 @@ foreach year in `years' {
 	*need to add contraindications to this loop
 	*need to add automatic redaction to this loop
 foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_pillars {	
-
+	display `drug'
 	*unstratified
 		count 
 		local total=r(N)
@@ -66,9 +66,11 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 			qui levelsof `c' , local(cats) 
 			di `cats'
 			foreach l of local cats {
-				noi di "Calculate proportion for variable `c' and level `l'" 
+				noi di "Calculate proportion on `drug' for variable `c' and level `l'" 
+				noi display "number of people in category"
 				count if `c'==`l'
 				local total=r(N)
+				noisily display "number of people in variable `c' and level `l' and on `drug'"
 				count if `c' ==`l' & `drug'==1
 				local ondrug =r(N)
 				// Loop through the results and post them to the temporary file
@@ -93,6 +95,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 ********************************************************************************
 *2.  GRAPH AND TABULATE THE PROPORTION OF PATIENTS ON DRUGS BY COVARIATES
 ********************************************************************************
+	noi display "combine the summaries from each year for a graph"
 	use "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018", clear
 	
 	local years 2019 2020 2021 2022 2023 
@@ -100,8 +103,8 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	append using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'"
 	}
 
-	**Round proportions and CI
 	* Rounding numbers in table to nearest 5
+	noi display "round numbers to the nearest 5"
 	foreach var in total ondrug {
 	gen rounded_`var' = round(`var', 5)
 	drop `var'
@@ -111,6 +114,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	gen proportion=(ondrug/total)
 	
 	* Calculate the confidence intervals for each proportion
+	noi display "make confidence intervals for each proportion"
 	gen lci = .
 	gen uci = .
 	count
@@ -127,11 +131,13 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	}
 	
 	*TURN PROPORTIONS INTO PERCENTAGES
+	noi display "make proportions into percentages"
 		replace proportion=proportion*100
 		replace lci=lci*100
 		replace uci=uci*100
 
-	*DESTRING THE DRUGS AND LABEL	
+	*DESTRING THE DRUGS AND LABEL
+	noi display "destring drug names and label"
 		gen drugpresc=.
 		replace drugpresc=1 if drug=="aa"
 		replace drugpresc=2 if drug=="betablockers"
@@ -152,6 +158,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	*GRAPHS BY COVARIATES
 	***************************************************************************
 	*Label variables for graph
+	noi display "labelling variables"
 		replace variable="Age group" if variable=="agegroup"
 		replace variable="Sex" if variable=="male"
 		replace variable="Ethnicity" if variable=="ethnicity"
@@ -232,22 +239,22 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		*OVERALL PRESCRIPTION, BY CALENDAR YEAR
 		***************************************************************************
 		
-		preserve	
+		preserve
+		noi display "make overall graph"
 			keep if variable=="Overall"
 			twoway bar proportion year, by(drugpresc, ///
 			rows(2) ///
 			legend(off) ///
 			graphregion(color(white))) ///
-			xlabel( 2022 2023, labsize(small) angle(45) notick) ///
+			xlabel(2018 2019 2020 2021 2022 2023, labsize(small) angle(45) notick) ///
 			ytitle(Percentage of patients treated (95% CI)) ///
 			yscale(range (0 100)) ///
 			ylabel(0(20)70) ///
 			xtitle("") ///
 			barwidth(0.8) ///
 			|| rcap uci lci year, 
-		graph save "$tabfigdir/prevalent_prevalences_by_`hftype'.gph", replace	
+		graph export "$tabfigdir/prevalent_prevalences_by_`hftype'.svg", as(svg) replace	
 		restore	
-		*2018 2019 2020 2021
 		*TABLE
 		order year drugpresc variable cat category total ondrug proportion lci uci
 		
