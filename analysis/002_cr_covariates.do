@@ -140,7 +140,7 @@ capture confirm string variable `var'
 							9 "Yorkshire and The Humber"
 	label values region_9 region_9
 	label var region_9 "Region of England (9 regions)"
-	tab region
+	tab region_9
 	
 *Age
 	* Check there are no missing ages
