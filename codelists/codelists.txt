@@ -1,7 +1,7 @@
 #### Medications ####
 opensafely/beta-blocker-medications/5a9825d4
-user/emilyherrett/arni/54c2d0da
-user/emilyherrett/mras/3bb35da5
+user/emilyherrett/arni-dmd/60b3298a
+user/emilyherrett/mras-dmd/79c29cbf
 user/john-tazare/sglt2-inhibitors-dmd/2fd4c021
 opensafely/ace-inhibitor-medications/0a044c49
 opensafely/angiotensin-ii-receptor-blockers-arbs/3ed5f2a9

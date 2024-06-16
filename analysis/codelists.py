@@ -274,12 +274,12 @@ betablocker_codes = codelist_from_csv(
     column="id",)
 
 arni_codes = codelist_from_csv(
-    "codelists/user-emilyherrett-arni.csv",
+    "codelists/user-emilyherrett-arni-dmd.csv",
     system="snomed",
     column="code",)
 
 mra_codes = codelist_from_csv(
-    "codelists/user-emilyherrett-mras.csv",
+    "codelists/user-emilyherrett-mras-dmd.csv",
     system="snomed",
     column="code",)
 
