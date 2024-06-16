@@ -103,6 +103,11 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	append using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'"
 	}
 
+	* Redact numbers less than 7
+	foreach var in total ondrug {
+	replace `var'=. if `var'<=7
+	}	
+	
 	* Rounding numbers in table to nearest 5
 	noi display "round numbers to the nearest 5"
 	foreach var in total ondrug {
@@ -112,7 +117,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 	}
 	* Calculate the proportion
 	gen proportion=(ondrug/total)
-	
+
 	* Calculate the confidence intervals for each proportion
 	noi display "make confidence intervals for each proportion"
 	gen lci = .
@@ -123,7 +128,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		local ondrug = ondrug[`i']
 		local total = total[`i']
 		display `i'
-		cii proportions `total' `ondrug'
+		capture cii proportions `total' `ondrug'
 		display r(lb)
 		display r(ub)
 		replace lci = r(lb) in `i'
@@ -227,9 +232,9 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		replace cat="No diabetes"  if variable=="Diabetes" & category==0						
 		replace cat="Diabetes"  if variable=="Diabetes" & category==1						
 
-		replace cat="No CKD"  if variable=="CKD" & category==0						
-		replace cat="CKD stage 3, eGFR 30-60"  if variable=="CKD" & category==1						
-		replace cat="CKD stage 4/5, eGFR <30"  if variable=="CKD" & category==2						
+		replace cat="No CKD"  if variable=="CKD" & category==1				
+		replace cat="CKD stage 3, eGFR 30-60"  if variable=="CKD" & category==2			
+		replace cat="CKD stage 4/5, eGFR <30"  if variable=="CKD" & category==3						
 
 		*replace cat="No CLD"  if variable=="CLD" & category==0						
 		*replace cat="CLD"  if variable=="CLD" & category==1						
