@@ -93,6 +93,7 @@ capture confirm string variable `var'
 
 	noi di "DROPPING IF NO IMD" 
 	drop if imd>=.
+	tab imd
 
 * Smoking
 	label define smoke 1 "Never" 2 "Former" 3 "Current" 
@@ -113,19 +114,20 @@ capture confirm string variable `var'
 							5 "Other"								///
 							6 "Unknown"
 	label values ethnicity ethnicity_lab
+	tab ethnicity
 
 * Region
 	tab region
 	rename region region_string
 	gen     region_9 = 1 if region_string=="East Midlands"
-	replace region_9 = 2 if region_string=="East of England"
+	replace region_9 = 2 if region_string=="East"
 	replace region_9 = 3 if region_string=="London"
 	replace region_9 = 4 if region_string=="North East"
 	replace region_9 = 5 if region_string=="North West"
 	replace region_9 = 6 if region_string=="South East"
 	replace region_9 = 7 if region_string=="South West"
 	replace region_9 = 8 if region_string=="West Midlands"
-	replace region_9 = 9 if region_string=="Yorkshire and the Humber"
+	replace region_9 = 9 if region_string=="Yorkshire and The Humber"
 
 	label define region_9 	1 "East Midlands" 					///
 							2 "East of England"   				///
@@ -138,13 +140,14 @@ capture confirm string variable `var'
 							9 "Yorkshire and The Humber"
 	label values region_9 region_9
 	label var region_9 "Region of England (9 regions)"
-
+	tab region
 	
 *Age
 	* Check there are no missing ages
 	assert age<.
 	assert ageband_broad!=""
 	gen agegroup=.
+	replace agegroup=0 if ageband_broad=="0"
 	replace agegroup=1 if ageband_broad=="18-29"
 	replace agegroup=2 if ageband_broad=="30-39"
 	replace agegroup=3 if ageband_broad=="40-49"
@@ -155,6 +158,11 @@ capture confirm string variable `var'
 	
 	label define agegrp 1 "18-29" 2 "30-39" 3 "40-49" 4 "50-59" 5 "60-69" 6 "70-79" 7 "80+"
 	label values agegroup agegrp
+	tab agegroup
+	bysort agegroup: summ age 
+	count
+	drop if age<18
+	count
 
 *eGFR  
 	* Set implausible creatinine values to missing (Note: zero changed to missing)
@@ -236,6 +244,11 @@ capture confirm string variable `var'
 	*mra 
 	*diuretics
 	*create a variable combining ACEI, ARB
+	tab arni, m 
+	tab mra, m
+	tab sglt2i, m 
+	
+	
 	gen aa=max(acei, arb)
 
 	*count the pillars
