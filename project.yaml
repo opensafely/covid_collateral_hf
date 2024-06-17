@@ -79,4 +79,12 @@ actions:
       moderately_sensitive:
         output: output/tabfig/prevalent_rates_summary*.csv 
 
+# Generate table 1: 204 
+  generate_table1_prevalent:
+    run: stata-mp:latest analysis/204_prevalent_cohort_table.do
+    needs: [generate_analysis_dataset_prevalent]
+    outputs:
+      moderately_sensitive:
+        output: output/tabfig/prevalent_table1*.csv 
+
 
