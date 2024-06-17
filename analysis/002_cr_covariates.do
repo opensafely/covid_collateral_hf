@@ -268,6 +268,19 @@ capture confirm string variable `var'
 	gen four_pillars=0
 	replace four_pillars=1 if npillars==4
 	
+	*populations for drug prevalence calculations
+	tab bb_contraindications
+	gen population_betablockers=1
+	replace population_betablockers=0 if bb_contraindications==1
+	
+	tab mra_contraindications
+	gen population_mra=1
+	replace population_mra=0 if mra_contraindications==1
+	
+	tab acei_contraindications
+	tab arb_contraindications
+	gen population_aa=1
+	replace population_aa=0 if acei_contraindications==1 & arb_contraindications==1
 	
 	*Hospitalisations
 	*All cause
