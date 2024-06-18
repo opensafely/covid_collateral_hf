@@ -67,10 +67,16 @@ foreach hftype in `heartfailtype' {
 		drop v3 v4 v5
 		drop in 1/3
 		destring v6, gen(n) ignore(",") force
-		replace n=. if n>0 & n<=7
-		replace v7="." if n==.
-		gen round_n=round(n,5) 
+			replace n=. if n>=1 & n<=7 
+			gen percent=v7
+			replace percent="." if n==.
+			gen round_n=round(n,5) 
+			replace round_n=n if v1=="Mean follow-up, years (SD)"
+			replace percent=v7 if v1=="Mean follow-up, years (SD)"
 		drop v6
+		drop n 
+		drop v7
+		order v1 v2  round_n  
 		export delimited using "$tabfigdir/prevalent_table1_`hftype'_`year'_redacted_rounded", replace
 
 	restore
@@ -80,7 +86,6 @@ foreach hftype in `heartfailtype' {
 
 * Close log file 
 log close
-
 		
 
  

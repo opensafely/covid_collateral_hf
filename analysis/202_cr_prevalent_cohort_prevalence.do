@@ -1,10 +1,10 @@
 ********************************************************************************
 *
-*	Do-file:		102_cr_prevalent_cohort_prevalence.do
+*	Do-file:		202_cr_prevalent_cohort_prevalence.do
 *
 *	Programmed by:	Emily Herrett (based on John & Alex)
 *
-*	Data used:		"$outdir/prevalent_cohort_hfref_`year'.dta"
+*	Data used:		"$outdir/prevalent_cohort_`hftype'_`year'.dta"
 *
 *	Data created:   "$tabfigdir/prevalences_summary_`year'"
 *
@@ -18,7 +18,7 @@
 ********************************************************************************
 do "`c(pwd)'/analysis/global.do"
 capture log close
-log using "$logdir/102_cr_prevalent_cohort_prevalence.log", replace
+log using "$logdir/202_cr_prevalent_cohort_prevalence.log", replace
 
 local heartfailtype " "hfref" "hf" "
 foreach hftype in `heartfailtype' {
@@ -28,7 +28,7 @@ foreach hftype in `heartfailtype' {
 ********************************************************************************
 
 local years " "2018" "2019" "2020" "2021" "2022" "2023" "
-*
+* 
 foreach year in `years' {
 
 	use "$outdir/prevalent_cohort_`hftype'_`year'.dta", clear 
@@ -41,10 +41,12 @@ foreach year in `years' {
 	postfile `measures' float(year)  str20(drug) str20(variable) float(category) float(total) float(ondrug) using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'", replace
 
 	*need to add contraindications to this loop
-	*need to add automatic redaction to this loop
 foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_pillars {	
 	display `drug'
 	*unstratified
+		preserve
+		*drop if patient has contraindications to the drug 
+		capture drop if population_`drug'!=1
 		count 
 		local total=r(N)
 		count if `drug'==1
@@ -85,7 +87,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 					
 				}
 			}
-			
+		restore	
 		}	
 	// Close the postfile
 	postclose `measures'
@@ -97,7 +99,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 ********************************************************************************
 	noi display "combine the summaries from each year for a graph"
 	use "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018", clear
-	
+	*
 	local years 2019 2020 2021 2022 2023 
 	foreach year in `years' {
 	append using "$tabfigdir/prevalent_prevalences_summary_`hftype'_`year'"
@@ -156,6 +158,18 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		label define drugs 1 "ACEi/ARB" 2 "Beta blocker" 3 "MRA" 4 "ARNi" 5 "SGLT2i" 6 "Two pillars" 7 "Three pillars" 8 "Four pillars"
 		label values drugpresc drugs
 
+		order year drugpresc variable cat category total ondrug proportion lci uci
+		
+		
+		export delimited using "$tabfigdir/prevalent_prevalences_summary_`hftype'_redacted_rounded.csv", replace
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2019.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2020.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2021.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2022.dta"
+		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2023.dta"
+
+		/*
 	***************************************************************************
 	*OVERALL PRESCRIPTION BY YEAR
 	***************************************************************************
@@ -215,7 +229,7 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 		replace cat="5 most deprived" if variable=="IMD" & category==5
 	
 		replace cat="East Midlands" if variable=="Region" & category==1				
-		replace cat="East of England" if variable=="Region" & category==2
+		replace cat="East" if variable=="Region" & category==2
 		replace cat="London" if variable=="Region" & category==3							
 		replace cat="North East"  if variable=="Region" & category==4						
 		replace cat="North West" if variable=="Region" & category==5						
@@ -238,12 +252,14 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 
 		*replace cat="No CLD"  if variable=="CLD" & category==0						
 		*replace cat="CLD"  if variable=="CLD" & category==1						
+*/
 
 
 		***************************************************************************
 		*OVERALL PRESCRIPTION, BY CALENDAR YEAR
 		***************************************************************************
-		
+		/*
+		*GRAPH POST OUTPUT CHECK
 		preserve
 		noi display "make overall graph"
 			keep if variable=="Overall"
@@ -258,29 +274,17 @@ foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_p
 			xtitle("") ///
 			barwidth(0.8) ///
 			|| rcap uci lci year, 
+			* 
+			
 		graph export "$tabfigdir/prevalent_prevalences_by_`hftype'.svg", as(svg) replace	
 		restore	
+		*/
 		*TABLE
-		order year drugpresc variable cat category total ondrug proportion lci uci
-		
-			
-		
-		export delimited using "$tabfigdir/prevalent_prevalences_summary_`hftype'.csv", replace
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2018.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2019.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2020.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2021.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2022.dta"
-		erase "$tabfigdir/prevalent_prevalences_summary_`hftype'_2023.dta"
-
-		}		
-		
-log close		
-
+				
 	/*
 	*GRAPH STRATIFIED
-	local years "  "2022" "2023" "
-	*"2018" "2019" "2020" "2021"
+	local years " "2023" "
+	*"2018" "2019" "2020" "2021" "2022"
 	foreach year in `years' {
 	foreach drug in aa betablockers mra arni sglt2i two_pillars three_pillars four_pillars {	
 			
@@ -301,12 +305,10 @@ log close
 				bargap(40) 
 				*need to add confidence intervals
 				graph save "$tabfigdir/prevalent_prevalences_by_covar_`hftype'_`year'_`drug'.gph", replace	
-	*TABLE
-	*export delimited using "$tabfigdir/prevalences_covar_`hftype'_`year'_`drug'.csv", replace
-			
 			restore	
 				}
-				}
-*/
-
-			
+				*/
+}
+				
+		
+log close		

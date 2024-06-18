@@ -20,7 +20,7 @@ do "`c(pwd)'/analysis/global.do"
 capture log close
 log using "$logdir/201_cr_prevalent_simple_rates.log", replace
 
-local heartfailtype " "hfref" "hf" "
+local heartfailtype " "hf" "hfref"  "
 foreach hftype in `heartfailtype' {
 
 local years " "2018" "2019" "2020" "2021" "2022" "2023" "
@@ -48,7 +48,10 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 		*local start2yr=master_index_date+365.25
 		local start5yr=master_index_date
 	
-		stset `enddatenow', id(patient_id) failure(`out'`x') enter(master_index_date) scale(365.25)
+		stset `enddatenow', id(patient_id) failure(`out'`x') enter(master_index_date) origin(master_index_date) scale(365.25)
+		
+		
+		
 		
 		* Overall rate 
 		stptime, per(1000)  
@@ -60,6 +63,9 @@ foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
 		post `measures' (`year') ("`x'") ("`out'") ("Overall") (0) (`r(ptime)') 	///
 							(`events') (`r(rate)') 								///
 							(`r(lb)') (`r(ub)')
+		
+		
+		
 		
 		* Stratified	
 		foreach c of global stratifiers {		
@@ -116,13 +122,13 @@ use "$tabfigdir/prevalent_rates_summary_`hftype'_2018", clear
 	gen `var'_midpoint = (ceil(`var'/6)*6) - (floor(6/2) * (`var'!=0))
 	}
 	gen rate_midpoint = (numEvents_midpoint/personTime_midpoint)*1000
-	gen lci_midpoint = (invpoisson(numEvents_midpoint,.975)/personTime_midpoint)*1000
-	gen uci_midpoint = (invpoisson(numEvents_midpoint,.025)/personTime_midpoint)*1000
+	gen lci_midpoint = exp( ln(rate_midpoint) - invnormal(0.975)/sqrt(numEvents_midpoint) )
+	gen uci_midpoint = exp( ln(rate_midpoint) + invnormal(0.975)/sqrt(numEvents_midpoint) )
 	drop personTime numEvents rate lc uc
 	replace lci_midpoint=. if rate_midpoint==0
 	replace uci_midpoint=. if rate_midpoint==0
 	
-		export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'.csv", replace
+		export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'_redacted_rounded.csv", replace
 
 		local years " "2018" "2019" "2020" "2021" "2022" "2023" "
 *		
@@ -134,8 +140,3 @@ use "$tabfigdir/prevalent_rates_summary_`hftype'_2018", clear
 }
 
 log close
-
-
-
-
-
