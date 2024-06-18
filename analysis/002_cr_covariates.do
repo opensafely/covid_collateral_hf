@@ -81,10 +81,13 @@ capture confirm string variable `var'
 	* Group into 5 groups
 	rename imd imd_o
 	egen imd = cut(imd_o), group(5) icodes
+	tab imd
 	replace imd = imd + 1
+	tab imd
 	replace imd = . if imd_o==-1
+	tab imd
 	drop imd_o
-
+	tab imd
 	* Reverse the order (so high is more deprived)
 	recode imd 5=1 4=2 3=3 2=4 1=5 .=.
 
