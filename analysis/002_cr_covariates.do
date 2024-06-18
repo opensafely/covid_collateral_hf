@@ -79,6 +79,10 @@ capture confirm string variable `var'
 
 *IMD
 	* Group into 5 groups
+	tab imd, m 
+	drop if imd==.
+	drop if imd==0
+	/*
 	rename imd imd_o
 	egen imd = cut(imd_o), group(5) icodes
 	tab imd
@@ -88,6 +92,7 @@ capture confirm string variable `var'
 	tab imd
 	drop imd_o
 	tab imd
+	*/
 	* Reverse the order (so high is more deprived)
 	recode imd 5=1 4=2 3=3 2=4 1=5 .=.
 
