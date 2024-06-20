@@ -23,25 +23,26 @@ log using "$logdir/201_cr_prevalent_simple_rates.log", replace
 local heartfailtype " "hf" "hfref"  "
 foreach hftype in `heartfailtype' {
 
-local years " "2018" "2019" "2020" "2021" "2022" "2023" "
-* 
-foreach year in `years' {
-use "$outdir/prevalent_cohort_`hftype'_`year'.dta", clear 
+	local years "  "2023" "
+	* "2018" "2019" "2020" "2021" "2022"
+	foreach year in `years' {
+	use "$outdir/prevalent_cohort_`hftype'_`year'.dta", clear 
 
-global stratifiers "agegroup male ethnicity imd region_9 duration_hf_yrs previous_diabetes ckd aa arni betablocker mra sglt2i two_pillars three_pillars four_pillars"
-*efi_cat
+	global stratifiers "agegroup male ethnicity imd region_9 duration_hf_yrs previous_diabetes ckd aa arni betablocker mra sglt2i two_pillars three_pillars four_pillars"
+	*efi_cat
 
-tempname measures
-																	 
-	postfile `measures'  float(year) str20(time) str25(outcome) str20(variable) category personTime numEvents rate lc uc using "$tabfigdir/prevalent_rates_summary_`hftype'_`year'", replace
+	tempname measures
+																		 
+		postfile `measures'  float(year) str20(time) str25(outcome) str20(variable) category personTime numEvents rate lc uc using "$tabfigdir/prevalent_rates_summary_`hftype'_`year'", replace
 
-foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
-				cvd_mortality  hyperkalaemia ///
-				hyponatraemia dka_hosp aki fractures{
+	foreach v in all_hosp_fup outhf_hosp all_cvd_fup allcause_mortality ///
+					cvd_mortality  hyperkalaemia ///
+					hyponatraemia dka_hosp aki fractures{
 	preserve
 	cap drop time	
 	local out  `v'
-	local d " "1yr" "5yr" "
+	local d " "1yr"  "
+	*"5yr"
 	foreach x in `d' {
 		local enddatenow= "`v'_enddate`x'"
 		local start1yr=master_index_date
@@ -111,12 +112,14 @@ export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.csv",
 }
 
 * Change postfiles to csv
-use "$tabfigdir/prevalent_rates_summary_`hftype'_2018", clear
+use "$tabfigdir/prevalent_rates_summary_`hftype'_2023", clear
+		/*
 		local years " "2019" "2020" "2021" "2022" "2023" "
 		* 
 		foreach year in `years' {
 			append using "$tabfigdir/prevalent_rates_summary_`hftype'_`year'"
 			}
+			*/
 	** Redact and round rates
 	foreach var of varlist numEvents personTime  {
 	gen `var'_midpoint = (ceil(`var'/6)*6) - (floor(6/2) * (`var'!=0))
@@ -130,8 +133,8 @@ use "$tabfigdir/prevalent_rates_summary_`hftype'_2018", clear
 	
 		export delimited using "$tabfigdir/prevalent_rates_summary_`hftype'_redacted_rounded.csv", replace
 
-		local years " "2018" "2019" "2020" "2021" "2022" "2023" "
-*		
+		local years " "2023" "
+*		"2018" "2019" "2020" "2021" "2022" 
 		foreach year in `years' {
 			capture erase "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.dta"
 			capture erase "$tabfigdir/prevalent_rates_summary_`hftype'_`year'.csv"
